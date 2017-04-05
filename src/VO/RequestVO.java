@@ -2,7 +2,9 @@ package VO;
 
 import java.util.List;
 
-public class RequestVO extends AbstractVO {
+import server.DataObject;
+
+public abstract class RequestVO extends AbstractVO {
 	private String command;
 
 	public String getCommand() {
@@ -13,7 +15,5 @@ public class RequestVO extends AbstractVO {
 		this.command = command;
 	}
 
-	public List<String> execute(){
-		return null;
-	}
+	public abstract List<String> execute(DataObject data);
 }

@@ -1,6 +1,7 @@
 package server;
 
 public class Commands {
+	
 	static String advertisedhostname = "advertisedhostname";
 	static String connectionintervallimit = "connectionintervallimit";
 	static String exchangeinterval = "exchangeinterval";
