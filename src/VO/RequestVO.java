@@ -1,5 +1,7 @@
 package VO;
 
+import java.util.List;
+
 public class RequestVO extends AbstractVO {
 	private String command;
 
@@ -11,5 +13,7 @@ public class RequestVO extends AbstractVO {
 		this.command = command;
 	}
 
-
+	public List<String> execute(){
+		return null;
+	}
 }
