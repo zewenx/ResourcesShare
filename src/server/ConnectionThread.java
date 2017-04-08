@@ -14,7 +14,6 @@ import netscape.javascript.JSObject;
 
 public class ConnectionThread implements Runnable {
 
-	private JSObject commandObject;
 	private Socket mSocket;
 	
 	private DataInputStream in;
