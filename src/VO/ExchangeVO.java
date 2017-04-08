@@ -1,6 +1,7 @@
 package VO;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import server.DataObject;
@@ -27,7 +28,23 @@ public class ExchangeVO extends RequestVO {
 			responseList.add(vo.toJson());
 			return responseList;
 		}
-		return null;
+		for (ServerVO serverVO : serverList) {
+			if (serverVO.getHostname() == null ||serverVO.getHostname()==""||serverVO.getPort()==null||serverVO.getPort()=="") {
+				ErrorVO vo = new ErrorVO();
+				vo.setErrorMessage("missing or invalid server list");
+				responseList.add(vo.toJson());
+				return responseList;
+			}
+		}
+		
+		for (ServerVO serverVO : serverList) {
+			if (!data.isServerAlreadyExisted(serverVO)) {
+				data.addServer(serverVO);
+			}
+		}
+		SuccessVO successVO = new SuccessVO();
+		responseList.add(successVO.toJson());
+		return responseList;
 	}
 	
 }
