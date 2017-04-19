@@ -2,9 +2,12 @@ package EZShare;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,17 +19,23 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.io.FileUtils;
 
+import com.google.gson.Gson;
 import com.sun.org.apache.xpath.internal.operations.And;
 
 import VO.AbstractVO;
 import VO.ExchangeVO;
+import VO.FetchVO;
 import VO.RemoveVO;
 import VO.ResourceVO;
 import VO.ServerVO;
 import VO.ShareVO;
+import VO.SpecialResourceVO;
+import javafx.scene.effect.FloatMap;
 import server.Commands;
 import server.LogUtils;
+import sun.util.logging.resources.logging;
 
 public class Client {
 
@@ -99,7 +108,7 @@ public class Client {
 			} else if (commands.hasOption(Commands.exchange)) {
 				exchangeCommand(commands);
 			} else if (commands.hasOption(Commands.fetch)) {
-
+				fetchCommand(commands);
 			} else if (commands.hasOption(Commands.query)) {
 
 			} else if (commands.hasOption(Commands.remove)) {
@@ -114,6 +123,96 @@ public class Client {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	private void fetchCommand(CommandLine commands) {
+		FetchVO vo = new FetchVO();
+		vo.setCommand("FETCH");
+		ResourceVO resourceVO = new ResourceVO();
+		resourceVO.setChannel(commands.getOptionValue(Commands.channel));
+		resourceVO.setDescription(commands.getOptionValue(Commands.description));
+		resourceVO.setName(commands.getOptionValue(Commands.name));
+		resourceVO.setOwner(commands.getOptionValue(Commands.owner));
+		String tags = commands.getOptionValue(Commands.tags);
+		ArrayList<String> taglist = new ArrayList<String>();
+		if (tags != null & tags != "") {
+			for (String string : tags.split(",")) {
+				taglist.add(string);
+			}
+		}
+		resourceVO.setTags(taglist);
+		resourceVO.setUri(commands.getOptionValue(Commands.uri));
+		resourceVO.setEzserver(null);
+		vo.setResource(resourceVO);
+
+		if (debug) {
+			LogUtils.initLogger().log("setting debug on", debug);
+		}
+		commandLog("fetching to ");
+
+		Socket socket = null;
+		try {
+
+			// InetSocketAddress address = new
+			// InetSocketAddress("sunrise.cis.unimelb.edu.au", 3780);
+			InetSocketAddress address = null;
+			if (defaultHost) {
+				address = new InetSocketAddress("127.0.0.1", 8888);
+			} else {
+				address = new InetSocketAddress(parameters.get(Commands.host), Integer.parseInt(parameters.get(Commands.port)));
+			}
+			socket = new Socket();
+			socket.connect(address);
+			DataInputStream in = new DataInputStream(socket.getInputStream());
+			DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+			LogUtils.initLogger().log(vo.toJson(), debug);
+			out.writeUTF(vo.toJson());
+			out.flush();
+
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			String response = in.readUTF();
+			if (response.contains("error")) {
+				System.out.println(response);
+				return;
+			}
+			SpecialResourceVO specialResourceVO = new Gson().fromJson(in.readUTF(), SpecialResourceVO.class);
+
+			File file = new File(new URI(specialResourceVO.getUri()));
+			String fileName = file.getName();
+			File dataFile = new File(fileName);
+			if (dataFile.exists()) {
+				dataFile.delete();
+			}
+			dataFile.createNewFile();
+			byte[] datas = new byte[(int) specialResourceVO.getResourceSize()+1];
+			int count = 0;
+			while(count < specialResourceVO.getResourceSize()){
+				count += in.read(datas, count, (int)(specialResourceVO.getResourceSize())-count);
+			}
+			FileUtils.writeByteArrayToFile(dataFile, datas);
+
+			System.out.println(in.readUTF());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			try {
+				socket.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
 	}
 
 	private void removeCommand(CommandLine commands) {
@@ -135,15 +234,15 @@ public class Client {
 		resourceVO.setUri(commands.getOptionValue(Commands.uri));
 		resourceVO.setEzserver(null);
 		vo.setResource(resourceVO);
-		
+
 		if (debug) {
 			LogUtils.initLogger().log("setting debug on", debug);
 		}
 		commandLog("removing to ");
-		
+
 		List<String> responseList = request(vo);
 		String response = responseList.get(0);
-		System.out.println(response);		
+		System.out.println(response);
 	}
 
 	private void shareCommand(CommandLine commands) {
@@ -169,14 +268,14 @@ public class Client {
 		resourceVO.setUri(commands.getOptionValue(Commands.uri));
 		resourceVO.setEzserver(null);
 		vo.setResource(resourceVO);
-		
+
 		if (debug) {
 			LogUtils.initLogger().log("setting debug on", debug);
 		}
 		commandLog("sharing to ");
-		
-		List<String> responseList = request(vo);
-		String response = responseList.get(0);
+
+		List responseList = request(vo);
+		String response = (String) responseList.get(0);
 		System.out.println(response);
 	}
 
@@ -195,31 +294,32 @@ public class Client {
 		}
 		vo.setServerList(serverList);
 		List<String> responseList = request(vo);
-		
+
 		commandLog("exchanging to ");
 		String response = responseList.get(0);
 		System.out.println(response);
 	}
 
-	void commandLog(String commandInfo){
+	void commandLog(String commandInfo) {
 		if (defaultHost) {
 			LogUtils.initLogger().log(commandInfo + "localhost:8888", debug);
-		}else{
-			LogUtils.initLogger().log(commandInfo + parameters.get(Commands.host)+":"+parameters.get(Commands.port), debug);
+		} else {
+			LogUtils.initLogger().log(commandInfo + parameters.get(Commands.host) + ":" + parameters.get(Commands.port), debug);
 		}
 	}
-	
-	List<String> request(AbstractVO vo) {
+
+	List request(AbstractVO vo) {
 		Socket socket = null;
-		List<String> responseList = new ArrayList<String>();
+		List responseList = new ArrayList<String>();
 		try {
 
-			// InetSocketAddress address = new InetSocketAddress("sunrise.cis.unimelb.edu.au", 3780);
+			// InetSocketAddress address = new
+			// InetSocketAddress("sunrise.cis.unimelb.edu.au", 3780);
 			InetSocketAddress address = null;
 			if (defaultHost) {
 				address = new InetSocketAddress("127.0.0.1", 8888);
 			} else {
-				address = new InetSocketAddress(parameters.get(Commands.host),Integer.parseInt(parameters.get(Commands.port)));
+				address = new InetSocketAddress(parameters.get(Commands.host), Integer.parseInt(parameters.get(Commands.port)));
 			}
 			socket = new Socket();
 			socket.connect(address);
@@ -228,20 +328,22 @@ public class Client {
 			LogUtils.initLogger().log(vo.toJson(), debug);
 			out.writeUTF(vo.toJson());
 			out.flush();
-			
+
 			try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
+
 			while (in.available() > 0) {
 				System.out.println(in.available());
 				responseList.add(in.readUTF());
 			}
-			for (String str : responseList) {
-				LogUtils.initLogger().log(str, debug);
+			for (Object str : responseList) {
+				if (str instanceof String) {
+					LogUtils.initLogger().log((String) str, debug);
+				}
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

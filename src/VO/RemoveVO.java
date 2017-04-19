@@ -10,7 +10,7 @@ public class RemoveVO extends PublishVO {
 	public List<String> execute(DataObject data) {
 		List<String> responseList = new ArrayList<String>();
 
-		if (data.isResourceExisted(getResource())) {
+		if (!data.isResourceExisted(getResource())) {
 			ErrorVO vo = new ErrorVO();
 			vo.setErrorMessage("cannot remove resource");
 			responseList.add(vo.toJson());

@@ -35,9 +35,14 @@ public class ConnectionThread implements Runnable {
 	public void run() {
 		try {
 			String data = in.readUTF();
-			List<String> responseData = CommandExecutor.init().submit(data);
-			for(String str : responseData)
-				out.writeUTF(str);
+			List responseData = CommandExecutor.init().submit(data);
+			for(Object o : responseData){
+				if (o instanceof String) {
+					out.writeUTF((String)o);
+				}else{
+					out.write((byte[])o);
+				}
+			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
