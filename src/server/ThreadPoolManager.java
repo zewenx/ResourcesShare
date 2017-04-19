@@ -14,18 +14,18 @@ public class ThreadPoolManager {
 		fixedThreadPool = Executors.newFixedThreadPool(cores);
 	}
 
-	static ThreadPoolManager init() {
+	public static ThreadPoolManager init() {
 		if (mPoolManager == null) {
 			mPoolManager = new ThreadPoolManager();
 		}
 		return mPoolManager;
 	}
 
-	void submitThread(Runnable runnable) {
+	public void submitThread(Runnable runnable) {
 		fixedThreadPool.execute(runnable);
 	}
 
-	void setThreadNumber(int count) {
+	public void setThreadNumber(int count) {
 		cores = count;
 	}
 }

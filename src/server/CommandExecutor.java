@@ -6,6 +6,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.sun.org.apache.regexp.internal.recompile;
 
 import VO.AbstractVO;
 import VO.ExchangeVO;
@@ -30,6 +31,10 @@ public class CommandExecutor {
 			mCommandExecutor = new CommandExecutor();
 		}
 		return mCommandExecutor;
+	}
+	
+	public DataObject getDataObject(){
+		return data;
 	}
 
 	synchronized List<String> submit(String requestData) {

@@ -1,4 +1,4 @@
-package client;
+package EZShare;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -21,6 +21,7 @@ import com.sun.org.apache.xpath.internal.operations.And;
 
 import VO.AbstractVO;
 import VO.ExchangeVO;
+import VO.RemoveVO;
 import VO.ResourceVO;
 import VO.ServerVO;
 import VO.ShareVO;
@@ -102,7 +103,7 @@ public class Client {
 			} else if (commands.hasOption(Commands.query)) {
 
 			} else if (commands.hasOption(Commands.remove)) {
-
+				removeCommand(commands);
 			} else if (commands.hasOption(Commands.share)) {
 				shareCommand(commands);
 			} else {
@@ -113,6 +114,36 @@ public class Client {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	private void removeCommand(CommandLine commands) {
+		RemoveVO vo = new RemoveVO();
+		vo.setCommand("REMOVE");
+		ResourceVO resourceVO = new ResourceVO();
+		resourceVO.setChannel(commands.getOptionValue(Commands.channel));
+		resourceVO.setDescription(commands.getOptionValue(Commands.description));
+		resourceVO.setName(commands.getOptionValue(Commands.name));
+		resourceVO.setOwner(commands.getOptionValue(Commands.owner));
+		String tags = commands.getOptionValue(Commands.tags);
+		ArrayList<String> taglist = new ArrayList<String>();
+		if (tags != null & tags != "") {
+			for (String string : tags.split(",")) {
+				taglist.add(string);
+			}
+		}
+		resourceVO.setTags(taglist);
+		resourceVO.setUri(commands.getOptionValue(Commands.uri));
+		resourceVO.setEzserver(null);
+		vo.setResource(resourceVO);
+		
+		if (debug) {
+			LogUtils.initLogger().log("setting debug on", debug);
+		}
+		commandLog("removing to ");
+		
+		List<String> responseList = request(vo);
+		String response = responseList.get(0);
+		System.out.println(response);		
 	}
 
 	private void shareCommand(CommandLine commands) {

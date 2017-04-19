@@ -1,4 +1,4 @@
-package server;
+package EZShare;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -18,16 +18,21 @@ import org.apache.commons.cli.ParseException;
 
 import com.sun.org.apache.bcel.internal.generic.NEW;
 
+import server.Commands;
+import server.ConnectionThread;
+import server.InteractionThread;
+import server.ThreadPoolManager;
+
 public class Server {
 
-	Map<String, String> parameters = new HashMap<String, String>();
+	public static Map<String, String> parameters = new HashMap<String, String>();
 
 	Options options;
 
 	public Server() {
 		this.options = new Options();
 		parameters.put(Commands.port, "8888");
-		parameters.put(Commands.advertisedhostname, "127.0.0.1");
+		parameters.put(Commands.advertisedhostname, "FrancisServer");
 		parameters.put(Commands.exchangeinterval, "600000");
 		parameters.put(Commands.secret, "asdgasdfgasdfga");
 		parameters.put(Commands.connectionintervallimit, "1000");
@@ -88,6 +93,7 @@ public class Server {
 
 		try {
 			ServerSocket listenSocket = new ServerSocket(Integer.parseInt(parameters.get(Commands.port)));
+			new Thread(new InteractionThread(parameters.get(Commands.exchangeinterval),parameters.get(Commands.debug).equals("Y"))).start();
 			while (true) {
 				Socket clientSocket = listenSocket.accept();
 				ConnectionThread connectionThread = new ConnectionThread(clientSocket);
