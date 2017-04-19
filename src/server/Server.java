@@ -5,6 +5,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.net.SocketFactory;
 
@@ -40,10 +42,11 @@ public class Server {
 	}
 
 	public static void main(String[] args) {
+		
 		new Server().start(args);
 	}
 
-	private void start(String[] args) {
+	public void start(String[] args) {
 		CommandLineParser parser = new DefaultParser();
 		try {
 			CommandLine commands = parser.parse(options, args);

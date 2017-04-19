@@ -29,7 +29,7 @@ public class ShareVO extends PublishVO{
 			return responseList;
 		}
 		
-		if (data.getSecret() != secret) {
+		if (!data.getSecret().equals(secret)) {
 			ErrorVO vo = new ErrorVO();
 			vo.setErrorMessage("incorrect secret");
 			responseList.add(vo.toJson());

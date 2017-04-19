@@ -3,6 +3,9 @@ package server;
 import java.util.List;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import VO.AbstractVO;
 import VO.ExchangeVO;
@@ -30,19 +33,23 @@ public class CommandExecutor {
 	}
 
 	synchronized List<String> submit(String requestData) {
-		RequestVO requestVO = new Gson().fromJson(requestData, RequestVO.class);
-		String command = requestVO.getCommand();
-		if (command.equals("publish")) {
+		JsonParser parser = new JsonParser();
+		JsonObject jsonObject  =parser.parse(requestData).getAsJsonObject();
+		
+		JsonElement commandElement = jsonObject.get("command");
+		String command = commandElement.toString().toLowerCase();
+		RequestVO requestVO = null;
+		if (command.contains("publish")) {
 			requestVO = new Gson().fromJson(requestData, PublishVO.class);
-		}else if (command.equals("remove")) {
+		}else if (command.contains("remove")) {
 			requestVO = new Gson().fromJson(requestData, RemoveVO.class);
-		}else if (command.equals("share")) {
+		}else if (command.contains("share")) {
 			requestVO = new Gson().fromJson(requestData, ShareVO.class);
-		}else if (command.equals("query")) {
+		}else if (command.contains("query")) {
 			requestVO = new Gson().fromJson(requestData, QueryVO.class);
-		}else if (command.equals("fetch")) {
+		}else if (command.contains("fetch")) {
 			requestVO = new Gson().fromJson(requestData, FetchVO.class);
-		}else if (command.equals("exchange")) {
+		}else if (command.contains("exchange")) {
 			requestVO = new Gson().fromJson(requestData, ExchangeVO.class);
 		}
 		
