@@ -31,6 +31,7 @@ import VO.RemoveVO;
 import VO.ResourceVO;
 import VO.ServerVO;
 import VO.ShareVO;
+import VO.PublishVO;
 import VO.SpecialResourceVO;
 import javafx.scene.effect.FloatMap;
 import server.Commands;
@@ -104,13 +105,13 @@ public class Client {
 			}
 
 			if (commands.hasOption(Commands.publish)) {
-
+				publishCommand(commands);
 			} else if (commands.hasOption(Commands.exchange)) {
 				exchangeCommand(commands);
 			} else if (commands.hasOption(Commands.fetch)) {
 				fetchCommand(commands);
 			} else if (commands.hasOption(Commands.query)) {
-
+				
 			} else if (commands.hasOption(Commands.remove)) {
 				removeCommand(commands);
 			} else if (commands.hasOption(Commands.share)) {
@@ -123,6 +124,32 @@ public class Client {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	private void publishCommand(CommandLine commands){
+		PublishVO vo = new PublishVO();
+		vo.setCommand("PUBLISH");
+		ResourceVO resourceVO = new ResourceVO();
+		resourceVO.setChannel(commands.getOptionValue(Commands.channel));
+		resourceVO.setDescription(commands.getOptionValue(Commands.description));
+		resourceVO.setName(commands.getOptionValue(Commands.name));
+		resourceVO.setOwner(commands.getOptionValue(Commands.owner));
+		String tags = commands.getOptionValue(Commands.tags);
+		ArrayList<String> taglist = new ArrayList<String>();
+		if (tags != null & tags != "") {
+			for (String string : tags.split(",")) {
+				taglist.add(string);
+			}
+		}
+		resourceVO.setTags(taglist);
+		resourceVO.setUri(commands.getOptionValue(Commands.uri));
+		resourceVO.setEzserver(null);
+		vo.setResource(resourceVO);
+		
+		commandLog("publishing to ");
+		List<String> responseList = request(vo);
+		String response = responseList.get(0);
+		System.out.println(response);
 	}
 
 	private void fetchCommand(CommandLine commands) {
