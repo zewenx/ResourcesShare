@@ -48,13 +48,15 @@ same for all commands.)
 			responseList.add(vo.toJson());
 			return responseList;
 		}
+
 		//if the string is invalid
-		if (false){
+		if (getResource().getOwner().equals("*")) {
 			ErrorVO vo = new ErrorVO();
 			vo.setErrorMessage("invalid resource");
 			responseList.add(vo.toJson());
 			return responseList;
 		}
+		
 		//
 		data.saveResource(getResource());
 		SuccessVO successVO = new SuccessVO();

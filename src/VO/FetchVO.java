@@ -35,9 +35,17 @@ public class FetchVO extends RequestVO{
 			return responseList;
 		}
 		
+		
 		if (getResource() == null) {
 			ErrorVO vo = new ErrorVO();
 			vo.setErrorMessage("missing resourceTemplate");
+			responseList.add(vo.toJson());
+			return responseList;
+		}
+
+		if (getResource().getOwner().equals("*")) {
+			ErrorVO vo = new ErrorVO();
+			vo.setErrorMessage("invalid resource");
 			responseList.add(vo.toJson());
 			return responseList;
 		}

@@ -8,6 +8,7 @@ public class Commands {
 	public static String port = "port";
 	public static String secret = "secret";
 	public static String debug = "debug";
+	public static String help = "help";
 	
 	public static String channel ="channel";
 	public static String description ="description";

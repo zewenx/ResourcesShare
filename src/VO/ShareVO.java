@@ -36,6 +36,14 @@ public class ShareVO extends PublishVO{
 			return responseList;
 		}
 		
+
+		if (getResource().getOwner().equals("*")) {
+			ErrorVO vo = new ErrorVO();
+			vo.setErrorMessage("invalid resource");
+			responseList.add(vo.toJson());
+			return responseList;
+		}
+		
 		ResourceVO resourceVO = getResource();
 		String uri = resourceVO.getUri();
 		if (uri == null || uri == "" || !uri.startsWith("file://")) {

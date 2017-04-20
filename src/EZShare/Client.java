@@ -17,6 +17,7 @@ import java.util.logging.Logger;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.io.FileUtils;
@@ -83,6 +84,8 @@ public class Client {
 		options.addOption(Commands.share, false, "share resource on server");
 		options.addOption(Commands.tags, true, "resource tags, tag1,tag2,tag3,...");
 		options.addOption(Commands.uri, true, "resource URI");
+		
+		options.addOption(Commands.help, false, "help");
 	}
 
 	public static void main(String[] args) {
@@ -93,6 +96,11 @@ public class Client {
 		CommandLineParser parser = new DefaultParser();
 		try {
 			CommandLine commands = parser.parse(options, args);
+			
+			if (commands.hasOption(Commands.help)) {
+				new HelpFormatter().printHelp("java -cp ezshare.jar EZShare.Client", options);
+				return;
+			}
 
 			if (commands.hasOption(Commands.port) && commands.hasOption(Commands.host)) {
 				defaultHost = false;
@@ -364,7 +372,6 @@ public class Client {
 			}
 
 			while (in.available() > 0) {
-				System.out.println(in.available());
 				responseList.add(in.readUTF());
 			}
 			for (Object str : responseList) {

@@ -73,7 +73,6 @@ public class InteractionThread implements Runnable {
 				}
 
 				while (in.available() > 0) {
-					System.out.println(in.available());
 					responseList.add(in.readUTF());
 				}
 				for (String str : responseList) {

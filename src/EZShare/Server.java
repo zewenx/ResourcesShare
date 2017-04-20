@@ -13,6 +13,7 @@ import javax.net.SocketFactory;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
@@ -44,6 +45,8 @@ public class Server {
 		options.addOption(Commands.port, true, "server port, an integer");
 		options.addOption(Commands.secret, true, "secret");
 		options.addOption(Commands.debug, false, "print debug information");
+	
+		options.addOption(Commands.help, false, "help");
 	}
 
 	public static void main(String[] args) {
@@ -55,12 +58,11 @@ public class Server {
 		try {
 			CommandLine commands = parser.parse(options, args);
 
-			// Commands commandsObject = new Commands();
-			// for(java.lang.reflect.Field field :
-			// Commands.class.getDeclaredFields()){
-			// String command = (String) field.get(commandsObject);
-			// parameters.put(command, commands.getOptionValue(command));
-			// }
+			if (commands.hasOption(Commands.help)) {
+				new HelpFormatter().printHelp("java -cp ezshare.jar EZShare.Server", options);
+				return;
+			}
+
 
 			if (commands.hasOption(Commands.port)) {
 				parameters.put(Commands.port, commands.getOptionValue(Commands.port));
