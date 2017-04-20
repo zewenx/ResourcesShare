@@ -36,6 +36,7 @@ public class InteractionThread implements Runnable {
 			if (serverList.size() == 0) {
 				try {
 					Thread.sleep(exchangeInterval);
+					continue;
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
