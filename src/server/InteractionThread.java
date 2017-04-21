@@ -46,7 +46,7 @@ public class InteractionThread implements Runnable {
 			int num = (int) (Math.random() * serverList.size());
 			ServerVO serverVO = serverList.get(num);
 			String host = serverVO.getHostname();
-			int port = Integer.parseInt(serverVO.getPort());
+			int port = serverVO.getPort();
 
 			LogUtils.initLogger(Server.logtag).log("exchanging to " + host + ":" + port, debug);
 
@@ -80,7 +80,7 @@ public class InteractionThread implements Runnable {
 					LogUtils.initLogger(Server.logtag).log(" RECEIVED: " +str, debug);
 				}
 			} catch (IOException e) {
-				serverList.remove(vo);
+				serverList.remove(serverVO);
 				LogUtils.initLogger(Server.logtag).log("exchanging to " + host + ":" + port + " failed!", debug);
 			} finally {
 				try {

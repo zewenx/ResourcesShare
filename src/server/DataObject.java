@@ -64,7 +64,7 @@ public class DataObject {
 
 	public boolean isServerAlreadyExisted(ServerVO vo) {
 		for (ServerVO serverVO : serverList) {
-			if (serverVO.getHostname() == vo.getHostname() && serverVO.getPort() == vo.getPort()) {
+			if (serverVO.getHostname().equals(vo.getHostname()) && serverVO.getPort()== vo.getPort()) {
 				return true;
 			}
 		}

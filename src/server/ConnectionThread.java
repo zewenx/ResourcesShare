@@ -36,12 +36,12 @@ public class ConnectionThread implements Runnable {
 	public void run() {
 		try {
 			String data = in.readUTF();
-			LogUtils.initLogger(Server.logtag).log(" SEND: "+data, Server.debug);
+			LogUtils.initLogger(Server.logtag).log(" RECEIVED: "+data, Server.debug);
 			List responseData = CommandExecutor.init().submit(data);
 			for (Object o : responseData) {
 				if (o instanceof String) {
 					out.writeUTF((String) o);
-					LogUtils.initLogger(Server.logtag).log(" RECEIVED: "+(String) o, Server.debug);
+					LogUtils.initLogger(Server.logtag).log(" SEND: "+(String) o, Server.debug);
 				} else {
 					out.write((byte[]) o);
 				}

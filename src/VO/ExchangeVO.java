@@ -29,7 +29,7 @@ public class ExchangeVO extends RequestVO {
 			return responseList;
 		}
 		for (ServerVO serverVO : serverList) {
-			if (serverVO.getHostname() == null ||serverVO.getHostname()==""||serverVO.getPort()==null||serverVO.getPort()=="") {
+			if (serverVO.getHostname() == null ||serverVO.getHostname()==""||serverVO.getPort() == 0) {
 				ErrorVO vo = new ErrorVO();
 				vo.setErrorMessage("missing or invalid server list");
 				responseList.add(vo.toJson());

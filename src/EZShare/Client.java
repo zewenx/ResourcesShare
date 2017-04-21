@@ -326,7 +326,7 @@ public class Client {
 			ServerVO serverVO = new ServerVO();
 			String[] serversData = server.split(":");
 			serverVO.setHostname(serversData[0]);
-			serverVO.setPort(serversData[1]);
+			serverVO.setPort(Integer.parseInt(serversData[1]));
 			serverList.add(serverVO);
 		}
 		vo.setServerList(serverList);
