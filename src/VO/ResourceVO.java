@@ -11,6 +11,12 @@ public class ResourceVO extends AbstractVO {
 	private String channel;
 	private String owner;
 	private String ezserver;
+	
+	//constructor for ResourceVO, sets initial owner and channel to empty string
+	public ResourceVO(){
+		channel = "";
+		owner = "";
+	}
 
 	public String getName() {
 		return name;
