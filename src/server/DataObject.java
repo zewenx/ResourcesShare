@@ -1,6 +1,7 @@
 package server;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +27,11 @@ public class DataObject {
 	public void setSecret(String secret) {
 		this.secret = secret;
 	}
-
+	public Collection<ResourceVO> getResourceMap()
+	{
+		return dataList0.values();
+	}
+	
 	public void removeResource(ResourceVO vo) {
 		dataList0.remove(vo.getOwner() + vo.getChannel() + vo.getUri());
 		dataList1.remove(vo.getChannel() + vo.getUri());

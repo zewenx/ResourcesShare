@@ -51,7 +51,7 @@ public class PublishVO extends RequestVO{
 			return responseList;
 		}
 		
-		//
+		//update hash-map and return a success message
 		data.saveResource(getResource());
 		SuccessVO successVO = new SuccessVO();
 		responseList.add(successVO.toJson());

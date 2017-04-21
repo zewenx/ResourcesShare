@@ -120,7 +120,7 @@ public class Client {
 			} else if (commands.hasOption(Commands.fetch)) {
 				fetchCommand(commands);
 			} else if (commands.hasOption(Commands.query)) {
-
+				queryCommand(commands);
 			} else if (commands.hasOption(Commands.remove)) {
 				removeCommand(commands);
 			} else if (commands.hasOption(Commands.share)) {
@@ -161,6 +161,10 @@ public class Client {
 		List<String> responseList = request(vo);
 		String response = responseList.get(0);
 		System.out.println(response);
+	}
+	
+	private void queryCommand(CommandLine commands){
+		
 	}
 
 	private void fetchCommand(CommandLine commands) {

@@ -12,10 +12,15 @@ public class ResourceVO extends AbstractVO {
 	private String owner;
 	private String ezserver;
 	
-	//constructor for ResourceVO, sets initial owner and channel to empty string
+	//constructor for ResourceVO, sets empty template variables
 	public ResourceVO(){
 		this.channel = "";
 		this.owner = "";
+		this.description = "";
+		this.uri = "";
+		this.name = "";
+		this.tags = null;
+		this.ezserver = null;
 	}
 
 	public String getName() {
