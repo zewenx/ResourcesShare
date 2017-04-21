@@ -138,7 +138,7 @@ public class Client {
 	private void publishCommand(CommandLine commands) {
 		PublishVO vo = new PublishVO();
 		vo.setCommand("PUBLISH");
-		
+
 		// sets values for data resources
 		ResourceVO resourceVO = new ResourceVO();
 		resourceVO.setChannel(commands.getOptionValue(Commands.channel));
@@ -162,9 +162,9 @@ public class Client {
 		String response = responseList.get(0);
 		System.out.println(response);
 	}
-	
-	private void queryCommand(CommandLine commands){
-		
+
+	private void queryCommand(CommandLine commands) {
+
 	}
 
 	private void fetchCommand(CommandLine commands) {
@@ -204,7 +204,7 @@ public class Client {
 			socket.connect(address);
 			DataInputStream in = new DataInputStream(socket.getInputStream());
 			DataOutputStream out = new DataOutputStream(socket.getOutputStream());
-			LogUtils.initLogger(logtag).log(" SEND: "+vo.toJson(), debug);
+			LogUtils.initLogger(logtag).log(" SEND: " + vo.toJson(), debug);
 			out.writeUTF(vo.toJson());
 			out.flush();
 
@@ -216,15 +216,16 @@ public class Client {
 			}
 
 			String response = in.readUTF();
-			
-			LogUtils.initLogger(logtag).log(" RECEIVED: "+ response, debug);
-			
+
+			LogUtils.initLogger(logtag).log(" RECEIVED: " + response, debug);
+			System.out.println(response);
+
 			if (response.contains("error")) {
 				System.out.println(response);
 				return;
 			}
 			SpecialResourceVO specialResourceVO = new Gson().fromJson(in.readUTF(), SpecialResourceVO.class);
-			LogUtils.initLogger(logtag).log(" RECEIVED: "+ specialResourceVO.toJson(), debug);
+			LogUtils.initLogger(logtag).log(" RECEIVED: " + specialResourceVO.toJson(), debug);
 
 			File file = new File(new URI(specialResourceVO.getUri()));
 			String fileName = file.getName();
@@ -240,7 +241,7 @@ public class Client {
 			}
 			FileUtils.writeByteArrayToFile(dataFile, datas);
 
-			LogUtils.initLogger(logtag).log(" RECEIVED: "+ in.readUTF(), debug);
+			LogUtils.initLogger(logtag).log(" RECEIVED: " + in.readUTF(), debug);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

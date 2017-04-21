@@ -50,6 +50,8 @@ public class FetchVO extends RequestVO{
 			return responseList;
 		}
 		
+		ResourceVO resourceVO = data.getResourceMap().get(getResource().getOwner() + getResource().getChannel() + getResource().getUri());
+		
 		try {
 			File file = new File(new URI(getResource().getUri()));
 			SuccessVO successVO = new SuccessVO();
@@ -57,13 +59,13 @@ public class FetchVO extends RequestVO{
 			
 			SpecialResourceVO specialResourceVO = new SpecialResourceVO();
 			specialResourceVO.setChannel(getResource().getChannel());
-			specialResourceVO.setDescription(getResource().getDescription());
-			specialResourceVO.setEzserver(getResource().getEzserver());
-			specialResourceVO.setName(getResource().getName());
-			specialResourceVO.setOwner(getResource().getOwner());
+			specialResourceVO.setDescription(resourceVO.getDescription());
+			specialResourceVO.setEzserver(resourceVO.getEzserver());
+			specialResourceVO.setName(resourceVO.getName());
+			specialResourceVO.setOwner(resourceVO.getOwner());
 			specialResourceVO.setResourceSize(file.length());
-			specialResourceVO.setTags(getResource().getTags());
-			specialResourceVO.setUri(getResource().getUri());
+			specialResourceVO.setTags(resourceVO.getTags());
+			specialResourceVO.setUri(resourceVO.getUri());
 			responseList.add(specialResourceVO.toJson());
 			
 			byte[] dataFile = FileUtils.readFileToByteArray(file);

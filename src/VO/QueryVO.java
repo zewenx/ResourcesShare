@@ -43,7 +43,7 @@ public class QueryVO extends RequestVO {
 		 * both ""))
 		 * 
 		 */
-		Collection<ResourceVO> list = data.getResourceMap();
+		Collection<ResourceVO> list = data.getResourceMap().values();
 		List<ResourceVO> resultList = new ArrayList<ResourceVO>();
 		for (ResourceVO vo : list) {
 			if (resourceTemplate.getChannel() != "") {

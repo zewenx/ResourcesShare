@@ -27,9 +27,9 @@ public class DataObject {
 	public void setSecret(String secret) {
 		this.secret = secret;
 	}
-	public Collection<ResourceVO> getResourceMap()
+	public Map<String, ResourceVO> getResourceMap()
 	{
-		return dataList0.values();
+		return dataList0;
 	}
 	
 	public void removeResource(ResourceVO vo) {
@@ -42,7 +42,7 @@ public class DataObject {
 	}
 
 	public void saveResource(ResourceVO vo) {
-		vo.setEzserver(Server.parameters.get(Commands.host) + ":" + Server.parameters.get(Commands.host));
+		vo.setEzserver(Server.parameters.get(Commands.advertisedhostname) + ":" + Server.parameters.get(Commands.port));
 
 		dataList0.put(vo.getOwner() + vo.getChannel() + vo.getUri(), vo);
 		dataList1.put(vo.getChannel() + vo.getUri(), vo);
