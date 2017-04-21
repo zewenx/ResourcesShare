@@ -14,23 +14,29 @@ public class ResourceVO extends AbstractVO {
 	
 	//constructor for ResourceVO, sets initial owner and channel to empty string
 	public ResourceVO(){
-		channel = "";
-		owner = "";
+		this.channel = "";
+		this.owner = "";
 	}
 
 	public String getName() {
 		return name;
 	}
 
+	//sets name variable of the string and removes the null characters 
+	//and leading/trailing whitespace
 	public void setName(String name) {
-		this.name = name;
+		this.name = name.replace("\0", "").trim();
 	}
 
 	public ArrayList<String> getTags() {
 		return tags;
 	}
-
+	//sets all tag variables and removes all null characters
+	//and leading/trailing whitespace from each
 	public void setTags(ArrayList<String> tags) {
+		for(String t : tags){
+			t = t.replace("\0", "").trim();
+		}
 		this.tags = tags;
 	}
 
@@ -38,40 +44,50 @@ public class ResourceVO extends AbstractVO {
 		return description;
 	}
 
+	//sets description variable and removes all null characters
+	//and leading/trailing whitespace
 	public void setDescription(String description) {
-		this.description = description;
+		this.description = description.replace("\0", "").trim();
 	}
 
 	public String getUri() {
 		return uri;
 	}
 
+	//sets uri variable and removes all null characters
+	//and leading/trailing whitespace
 	public void setUri(String uri) {
-		this.uri = uri;
+		this.uri = uri.replace("\0", "").trim();
 	}
 
 	public String getChannel() {
 		return channel;
 	}
-
+	
+	//sets channel variable and removes null characters
+	//and leading/trailing whitespace
 	public void setChannel(String channel) {
-		this.channel = channel;
+		this.channel = channel.replace("\0", "").trim();
 	}
 
 	public String getOwner() {
 		return owner;
 	}
-
+	
+	//sets owner variable and removes null characters
+	//and leading/trailing whitespace
 	public void setOwner(String owner) {
-		this.owner = owner;
+		this.owner = owner.replace("\0", "").trim();
 	}
 
 	public String getEzserver() {
 		return ezserver;
 	}
-
+	
+	//sets Ezserver variable and removes all null characters
+	//and leading/trailing whitespace
 	public void setEzserver(String ezserver) {
-		this.ezserver = ezserver;
+		this.ezserver = ezserver.replace("\0", "").trim();
 	}
 
 }

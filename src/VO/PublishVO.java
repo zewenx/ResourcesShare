@@ -24,12 +24,6 @@ public class PublishVO extends RequestVO{
 		// Error Handling
 		/*
 		 * The URI must be present, must be absolute and cannot be a file scheme.
-Publishing a resource with the same primary key as an existing resource simply overwrites the
-existing resource.
-
-String values must not contain the "\0" character, nor start or end with whitespace. The server may
-silently remove such characters or may consider the resource invalid if such things are found (this is
-the same for all commands).
 
 		 */
 		//if there is no resource, return error.
