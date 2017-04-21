@@ -25,8 +25,10 @@ public class ResourceVO extends AbstractVO {
 	//sets name variable of the string and removes the null characters 
 	//and leading/trailing whitespace
 	public void setName(String name) {
-		this.name = name.replace("\0", "").trim();
-	}
+		if(name != null){
+			this.name = name.replace("\0", "").trim();
+		}
+	} 
 
 	public ArrayList<String> getTags() {
 		return tags;
@@ -34,8 +36,10 @@ public class ResourceVO extends AbstractVO {
 	//sets all tag variables and removes all null characters
 	//and leading/trailing whitespace from each
 	public void setTags(ArrayList<String> tags) {
-		for(String t : tags){
-			t = t.replace("\0", "").trim();
+		if(tags != null){
+			for(String t : tags){
+				t = t.replace("\0", "").trim();
+			}
 		}
 		this.tags = tags;
 	}
@@ -47,7 +51,9 @@ public class ResourceVO extends AbstractVO {
 	//sets description variable and removes all null characters
 	//and leading/trailing whitespace
 	public void setDescription(String description) {
-		this.description = description.replace("\0", "").trim();
+		if(description != null){
+			this.description = description.replace("\0", "").trim();
+		}
 	}
 
 	public String getUri() {
@@ -57,7 +63,9 @@ public class ResourceVO extends AbstractVO {
 	//sets uri variable and removes all null characters
 	//and leading/trailing whitespace
 	public void setUri(String uri) {
-		this.uri = uri.replace("\0", "").trim();
+		if(uri != null){
+			this.uri = uri.replace("\0", "").trim();
+		}
 	}
 
 	public String getChannel() {
@@ -67,7 +75,9 @@ public class ResourceVO extends AbstractVO {
 	//sets channel variable and removes null characters
 	//and leading/trailing whitespace
 	public void setChannel(String channel) {
-		this.channel = channel.replace("\0", "").trim();
+		if(channel != null){
+			this.channel = channel.replace("\0", "").trim();
+		}
 	}
 
 	public String getOwner() {
@@ -77,7 +87,9 @@ public class ResourceVO extends AbstractVO {
 	//sets owner variable and removes null characters
 	//and leading/trailing whitespace
 	public void setOwner(String owner) {
-		this.owner = owner.replace("\0", "").trim();
+		if(owner != null){
+			this.owner = owner.replace("\0", "").trim();
+		}
 	}
 
 	public String getEzserver() {
@@ -87,7 +99,9 @@ public class ResourceVO extends AbstractVO {
 	//sets Ezserver variable and removes all null characters
 	//and leading/trailing whitespace
 	public void setEzserver(String ezserver) {
-		this.ezserver = ezserver.replace("\0", "").trim();
+		if(ezserver != null){
+			this.ezserver = ezserver.replace("\0", "").trim();
+		}
 	}
 
 }
