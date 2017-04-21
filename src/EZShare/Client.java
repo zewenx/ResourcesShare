@@ -138,6 +138,8 @@ public class Client {
 	private void publishCommand(CommandLine commands) {
 		PublishVO vo = new PublishVO();
 		vo.setCommand("PUBLISH");
+		
+		// sets values for data resources
 		ResourceVO resourceVO = new ResourceVO();
 		resourceVO.setChannel(commands.getOptionValue(Commands.channel));
 		resourceVO.setDescription(commands.getOptionValue(Commands.description));

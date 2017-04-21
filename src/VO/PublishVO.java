@@ -7,7 +7,8 @@ import server.DataObject;
 
 public class PublishVO extends RequestVO{
 	private ResourceVO resource;
-
+	
+	//getters and setters
 	public ResourceVO getResource() {
 		return resource;
 	}
@@ -30,8 +31,6 @@ String values must not contain the "\0" character, nor start or end with whitesp
 silently remove such characters or may consider the resource invalid if such things are found (this is
 the same for all commands).
 
-The Owner field must not be the single character "*". The resource is invalid in this case. (This is the
-same for all commands.)
 		 */
 		//if there is no resource, return error.
 		if (getResource() == null) {
@@ -40,6 +39,7 @@ same for all commands.)
 			responseList.add(vo.toJson());
 			return responseList;
 		}
+		
 		//if there already exists resource with same URI and channel, but different
 		//user is not allowed
 		if (!data.isShaveOrPublishAllowed(getResource())) {
@@ -48,8 +48,8 @@ same for all commands.)
 			responseList.add(vo.toJson());
 			return responseList;
 		}
-
-		//if the string is invalid
+		
+		//if owner field is equal to a single * character, return invalid resource error
 		if (getResource().getOwner().equals("*")) {
 			ErrorVO vo = new ErrorVO();
 			vo.setErrorMessage("invalid resource");
