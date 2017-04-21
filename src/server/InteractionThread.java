@@ -8,6 +8,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
+import EZShare.Server;
 import VO.ExchangeVO;
 import VO.ServerVO;
 
@@ -47,7 +48,7 @@ public class InteractionThread implements Runnable {
 			String host = serverVO.getHostname();
 			int port = Integer.parseInt(serverVO.getPort());
 
-			LogUtils.initLogger().log("exchanging to " + host + ":" + port, debug);
+			LogUtils.initLogger(Server.logtag).log("exchanging to " + host + ":" + port, debug);
 
 			List<String> responseList = new ArrayList<String>();
 			try {
@@ -61,7 +62,7 @@ public class InteractionThread implements Runnable {
 				socket.connect(address);
 				DataInputStream in = new DataInputStream(socket.getInputStream());
 				DataOutputStream out = new DataOutputStream(socket.getOutputStream());
-				LogUtils.initLogger().log(vo.toJson(), debug);
+				LogUtils.initLogger(Server.logtag).log(" SEND: " +vo.toJson(), debug);
 				out.writeUTF(vo.toJson());
 				out.flush();
 
@@ -76,11 +77,11 @@ public class InteractionThread implements Runnable {
 					responseList.add(in.readUTF());
 				}
 				for (String str : responseList) {
-					LogUtils.initLogger().log(str, debug);
+					LogUtils.initLogger(Server.logtag).log(" RECEIVED: " +str, debug);
 				}
 			} catch (IOException e) {
 				serverList.remove(vo);
-				LogUtils.initLogger().log("exchanging to " + host + ":" + port + " failed!", debug);
+				LogUtils.initLogger(Server.logtag).log("exchanging to " + host + ":" + port + " failed!", debug);
 			} finally {
 				try {
 					socket.close();

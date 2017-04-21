@@ -21,7 +21,11 @@ public class DataObject {
 	List<ServerVO> serverList = new ArrayList<ServerVO>();
 
 	// secret only for share command
-	private String secret = "123443211234";
+	private String secret = "";
+
+	public void setSecret(String secret) {
+		this.secret = secret;
+	}
 
 	public void removeResource(ResourceVO vo) {
 		dataList0.remove(vo.getOwner() + vo.getChannel() + vo.getUri());

@@ -8,6 +8,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.sun.org.apache.regexp.internal.recompile;
 
+import EZShare.Server;
 import VO.AbstractVO;
 import VO.ExchangeVO;
 import VO.FetchVO;
@@ -24,6 +25,7 @@ public class CommandExecutor {
 	
 	private CommandExecutor() {
 		data = new DataObject();
+		data.setSecret(Server.parameters.get(Commands.secret));
 	}
 	
 	static CommandExecutor init(){

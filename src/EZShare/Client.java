@@ -63,6 +63,7 @@ public class Client {
 	Options options;
 	boolean debug = false;
 	boolean defaultHost = true;
+	public static final String logtag = "Client.log";
 
 	public Client() {
 		this.options = new Options();
@@ -84,7 +85,7 @@ public class Client {
 		options.addOption(Commands.share, false, "share resource on server");
 		options.addOption(Commands.tags, true, "resource tags, tag1,tag2,tag3,...");
 		options.addOption(Commands.uri, true, "resource URI");
-		
+
 		options.addOption(Commands.help, false, "help");
 	}
 
@@ -96,7 +97,7 @@ public class Client {
 		CommandLineParser parser = new DefaultParser();
 		try {
 			CommandLine commands = parser.parse(options, args);
-			
+
 			if (commands.hasOption(Commands.help)) {
 				new HelpFormatter().printHelp("java -cp ezshare.jar EZShare.Client", options);
 				return;
@@ -119,7 +120,7 @@ public class Client {
 			} else if (commands.hasOption(Commands.fetch)) {
 				fetchCommand(commands);
 			} else if (commands.hasOption(Commands.query)) {
-				
+
 			} else if (commands.hasOption(Commands.remove)) {
 				removeCommand(commands);
 			} else if (commands.hasOption(Commands.share)) {
@@ -133,8 +134,8 @@ public class Client {
 			e.printStackTrace();
 		}
 	}
-	
-	private void publishCommand(CommandLine commands){
+
+	private void publishCommand(CommandLine commands) {
 		PublishVO vo = new PublishVO();
 		vo.setCommand("PUBLISH");
 		ResourceVO resourceVO = new ResourceVO();
@@ -153,7 +154,7 @@ public class Client {
 		resourceVO.setUri(commands.getOptionValue(Commands.uri));
 		resourceVO.setEzserver(null);
 		vo.setResource(resourceVO);
-		
+
 		commandLog("publishing to ");
 		List<String> responseList = request(vo);
 		String response = responseList.get(0);
@@ -180,9 +181,6 @@ public class Client {
 		resourceVO.setEzserver(null);
 		vo.setResource(resourceVO);
 
-		if (debug) {
-			LogUtils.initLogger().log("setting debug on", debug);
-		}
 		commandLog("fetching to ");
 
 		Socket socket = null;
@@ -200,7 +198,7 @@ public class Client {
 			socket.connect(address);
 			DataInputStream in = new DataInputStream(socket.getInputStream());
 			DataOutputStream out = new DataOutputStream(socket.getOutputStream());
-			LogUtils.initLogger().log(vo.toJson(), debug);
+			LogUtils.initLogger(logtag).log(" SEND: "+vo.toJson(), debug);
 			out.writeUTF(vo.toJson());
 			out.flush();
 
@@ -212,11 +210,15 @@ public class Client {
 			}
 
 			String response = in.readUTF();
+			
+			LogUtils.initLogger(logtag).log(" RECEIVED: "+ response, debug);
+			
 			if (response.contains("error")) {
 				System.out.println(response);
 				return;
 			}
 			SpecialResourceVO specialResourceVO = new Gson().fromJson(in.readUTF(), SpecialResourceVO.class);
+			LogUtils.initLogger(logtag).log(" RECEIVED: "+ specialResourceVO.toJson(), debug);
 
 			File file = new File(new URI(specialResourceVO.getUri()));
 			String fileName = file.getName();
@@ -225,14 +227,14 @@ public class Client {
 				dataFile.delete();
 			}
 			dataFile.createNewFile();
-			byte[] datas = new byte[(int) specialResourceVO.getResourceSize()+1];
+			byte[] datas = new byte[(int) specialResourceVO.getResourceSize() + 1];
 			int count = 0;
-			while(count < specialResourceVO.getResourceSize()){
-				count += in.read(datas, count, (int)(specialResourceVO.getResourceSize())-count);
+			while (count < specialResourceVO.getResourceSize()) {
+				count += in.read(datas, count, (int) (specialResourceVO.getResourceSize()) - count);
 			}
 			FileUtils.writeByteArrayToFile(dataFile, datas);
 
-			System.out.println(in.readUTF());
+			LogUtils.initLogger(logtag).log(" RECEIVED: "+ in.readUTF(), debug);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -270,9 +272,6 @@ public class Client {
 		resourceVO.setEzserver(null);
 		vo.setResource(resourceVO);
 
-		if (debug) {
-			LogUtils.initLogger().log("setting debug on", debug);
-		}
 		commandLog("removing to ");
 
 		List<String> responseList = request(vo);
@@ -304,9 +303,6 @@ public class Client {
 		resourceVO.setEzserver(null);
 		vo.setResource(resourceVO);
 
-		if (debug) {
-			LogUtils.initLogger().log("setting debug on", debug);
-		}
 		commandLog("sharing to ");
 
 		List responseList = request(vo);
@@ -336,10 +332,11 @@ public class Client {
 	}
 
 	void commandLog(String commandInfo) {
+		LogUtils.initLogger(logtag).log("setting debug on", debug);
 		if (defaultHost) {
-			LogUtils.initLogger().log(commandInfo + "localhost:8888", debug);
+			LogUtils.initLogger(logtag).log(commandInfo + "localhost:8888", debug);
 		} else {
-			LogUtils.initLogger().log(commandInfo + parameters.get(Commands.host) + ":" + parameters.get(Commands.port), debug);
+			LogUtils.initLogger(logtag).log(commandInfo + parameters.get(Commands.host) + ":" + parameters.get(Commands.port), debug);
 		}
 	}
 
@@ -360,7 +357,7 @@ public class Client {
 			socket.connect(address);
 			DataInputStream in = new DataInputStream(socket.getInputStream());
 			DataOutputStream out = new DataOutputStream(socket.getOutputStream());
-			LogUtils.initLogger().log(vo.toJson(), debug);
+			LogUtils.initLogger(logtag).log(" SEND: " + vo.toJson(), debug);
 			out.writeUTF(vo.toJson());
 			out.flush();
 
@@ -376,7 +373,7 @@ public class Client {
 			}
 			for (Object str : responseList) {
 				if (str instanceof String) {
-					LogUtils.initLogger().log((String) str, debug);
+					LogUtils.initLogger(logtag).log(" RECEIVED: " + (String) str, debug);
 				}
 			}
 		} catch (IOException e) {
