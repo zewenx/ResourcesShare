@@ -33,6 +33,7 @@ import VO.ResourceVO;
 import VO.ServerVO;
 import VO.ShareVO;
 import VO.PublishVO;
+import VO.QueryVO;
 import VO.SpecialResourceVO;
 import javafx.scene.effect.FloatMap;
 import server.Commands;
@@ -164,7 +165,29 @@ public class Client {
 	}
 
 	private void queryCommand(CommandLine commands) {
+		QueryVO vo = new QueryVO();
+		vo.setCommand("QUERY");
 
+		// sets values for data resources
+		ResourceVO resourceVO = new ResourceVO();
+		resourceVO.setChannel(commands.getOptionValue(Commands.channel));
+		resourceVO.setDescription(commands.getOptionValue(Commands.description));
+		resourceVO.setName(commands.getOptionValue(Commands.name));
+		resourceVO.setOwner(commands.getOptionValue(Commands.owner));
+		String tags = commands.getOptionValue(Commands.tags);
+		ArrayList<String> taglist = new ArrayList<String>();
+		if (tags != null & tags != "") {
+			for (String string : tags.split(",")) {
+				taglist.add(string);
+			}
+		}
+		resourceVO.setTags(taglist);
+		resourceVO.setUri(commands.getOptionValue(Commands.uri));
+		resourceVO.setEzserver(null);
+		vo.setResourceTemplate(resourceVO);
+		
+		commandLog("Querying to ");
+		List<String> responseList = request(vo);
 	}
 
 	private void fetchCommand(CommandLine commands) {

@@ -36,7 +36,7 @@ public class Server {
 
 	public Server() {
 		this.options = new Options();
-		parameters.put(Commands.port, "8888");
+		parameters.put(Commands.port, "8889");
 		parameters.put(Commands.advertisedhostname, "FrancisServer");
 		parameters.put(Commands.exchangeinterval, "600000");
 		parameters.put(Commands.secret, "123443211234");
@@ -118,7 +118,5 @@ public class Server {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
 	}
-
 }
