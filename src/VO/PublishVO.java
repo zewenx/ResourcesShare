@@ -3,6 +3,10 @@ package VO;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.print.attribute.standard.PrinterMessageFromOperator;
+
+import com.sun.javafx.collections.MappingChange.Map;
+
 import server.DataObject;
 
 public class PublishVO extends RequestVO{
@@ -55,6 +59,8 @@ public class PublishVO extends RequestVO{
 		data.saveResource(getResource());
 		SuccessVO successVO = new SuccessVO();
 		responseList.add(successVO.toJson());
+		
+		//testing
 		return responseList;
 	}
 	

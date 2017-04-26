@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import javax.print.attribute.standard.PrinterMessageFromOperator;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -38,6 +40,7 @@ import VO.SpecialResourceVO;
 import javafx.scene.effect.FloatMap;
 import server.Commands;
 import server.LogUtils;
+import sun.management.counter.perf.PerfInstrumentation;
 import sun.util.logging.resources.logging;
 
 public class Client {
@@ -188,6 +191,11 @@ public class Client {
 		
 		commandLog("Querying to ");
 		List<String> responseList = request(vo);
+		String response = "";
+		for (String string : responseList) {
+			response += string +'\n';
+		}
+		System.out.println(response);
 	}
 
 	private void fetchCommand(CommandLine commands) {

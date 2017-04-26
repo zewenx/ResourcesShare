@@ -74,4 +74,12 @@ public class DataObject {
 	public void addServer(ServerVO serverVO) {
 		serverList.add(serverVO);
 	}
+	
+	public String toString(){
+		String data = "";
+		for (ResourceVO resource : dataList0.values()) {
+			data += resource.getUri() + "\n";
+		}
+		return data;
+	}
 }
