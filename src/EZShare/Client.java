@@ -189,6 +189,8 @@ public class Client {
 		resourceVO.setEzserver(null);
 		vo.setResourceTemplate(resourceVO);
 		
+		vo.setRelay(true);
+		
 		commandLog("Querying to ");
 		List<String> responseList = request(vo);
 		String response = "";

@@ -75,6 +75,10 @@ public class DataObject {
 		serverList.add(serverVO);
 	}
 	
+	public List<ServerVO> getServerList (){
+		return serverList;
+	}
+	
 	public String toString(){
 		String data = "";
 		for (ResourceVO resource : dataList0.values()) {
