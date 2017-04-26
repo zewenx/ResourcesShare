@@ -33,6 +33,8 @@ public class Server {
 	public static boolean debug = false;
 	public static final String logtag = "Server.log"; 
 	
+	HashMap<String, Long> clientIP = new HashMap<>();
+	
 
 	public Server() {
 		this.options = new Options();
@@ -40,7 +42,7 @@ public class Server {
 		parameters.put(Commands.advertisedhostname, "FrancisServer");
 		parameters.put(Commands.exchangeinterval, "600000");
 		parameters.put(Commands.secret, "123443211234");
-		parameters.put(Commands.connectionintervallimit, "1000");
+		parameters.put(Commands.connectionintervallimit, "1");
 		parameters.put(Commands.debug, "N");
 
 		options.addOption(Commands.advertisedhostname, true, "advertised hostname");
@@ -107,6 +109,17 @@ public class Server {
 			new Thread(new InteractionThread(parameters.get(Commands.exchangeinterval), parameters.get(Commands.debug).equals("Y"))).start();
 			while (true) {
 				Socket clientSocket = listenSocket.accept();
+				
+				String ip = clientSocket.getInetAddress().getHostAddress();
+				Long currentTime = System.currentTimeMillis();
+				if (clientIP.containsKey(ip)) {
+					if (currentTime - clientIP.get(ip) < 1000*Long.parseLong(parameters.get(Commands.connectionintervallimit))) {
+						LogUtils.initLogger(logtag).log("reject a connection from " +ip, true);
+						continue;
+					}
+				}
+				clientIP.put(ip, currentTime);
+				
 				ConnectionThread connectionThread = new ConnectionThread(clientSocket);
 				ThreadPoolManager.init().submitThread(connectionThread);
 				Thread.sleep(Long.parseLong(parameters.get(Commands.connectionintervallimit)));
