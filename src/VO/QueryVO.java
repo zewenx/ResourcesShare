@@ -1,12 +1,21 @@
 package VO;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.google.gson.Gson;
+
+import server.Commands;
 import server.DataObject;
+import server.LogUtils;
 
 public class QueryVO extends RequestVO {
 	private boolean relay;
@@ -56,43 +65,108 @@ public class QueryVO extends RequestVO {
 					continue;
 				}
 			}
-			if (resourceTemplate.getUri() != "") {
+			if (resourceTemplate.getUri() != null && !resourceTemplate.getUri().equals("")) {
 				if (!vo.getUri().equals(resourceTemplate.getUri())) {
 					continue;
 				}
 			}
-			if (resourceTemplate.getTags() != null) {
+			if (resourceTemplate.getTags() != null || resourceTemplate.getTags().size() > 0) {
 				Set<String> tagResource = new HashSet<String>();
 				Set<String> tagTemp = new HashSet<String>();
 				tagResource.addAll(resourceTemplate.getTags());
 				tagTemp.addAll(vo.getTags());
-				// TODO case insensitive
 				if (!tagTemp.containsAll(tagResource)) {
 					continue;
 				}
 			}
-
-			//TODO 
-			if (resourceTemplate.getName() != "") {
-				if (!vo.getName().contains(resourceTemplate.getName()))
-					continue;
-			}
-			if (resourceTemplate.getDescription() != "") {
-				if (!vo.getDescription().contains(resourceTemplate.getDescription()))
-					continue;
-			}
-			
-			resultList.add(vo);
-			
-		}
 		
+			if (resourceTemplate.getName() != "" &&resourceTemplate.getDescription() != "") {
+				if (!(vo.getName().contains(resourceTemplate.getName())&& vo.getDescription().contains(resourceTemplate.getDescription()))) {
+					continue;
+				}
+			}else{
+				if (resourceTemplate.getName() == "" && !vo.getDescription().contains(resourceTemplate.getDescription())) {
+					continue;
+				}
+				
+				if (resourceTemplate.getDescription() == "" && !vo.getName().contains(resourceTemplate.getName())) {
+					continue;
+				}
+			}
+			
+
+			vo.setOwner("*");
+			resultList.add(vo);
+
+		}
+		// System.out.println(data.toString());
 		SuccessVO successVO = new SuccessVO();
-		List<String > responseList = new ArrayList<String>();
+		List<String> responseList = new ArrayList<String>();
 		responseList.add(successVO.toJson());
-		for(ResourceVO resourceVO : resultList){
+		for (ResourceVO resourceVO : resultList) {
 			responseList.add(resourceVO.toJson());
 		}
-		responseList.add(new ResultSizeVO().setResultSize(""+resultList.size()).toJson());
+		if(data.getServerList().size()>0&& relay==true){
+			for(ServerVO serverVO : data.getServerList()){
+				this.setRelay(false);
+				List tempList = request(this, serverVO.getHostname(), serverVO.getPort());
+				responseList.addAll(tempList);
+			}
+		}
+		
+		
+		responseList.add(new ResultSizeVO().setResultSize("" +(responseList.size()-1)).toJson());
+		return responseList;
+	}
+	
+	List request(AbstractVO vo,String host,int port) {
+		Socket socket = null;
+		List responseList = new ArrayList<String>();
+		try {
+
+			// InetSocketAddress address = new
+			// InetSocketAddress("sunrise.cis.unimelb.edu.au", 3780);
+			InetSocketAddress address = new InetSocketAddress(host, port);
+			socket = new Socket();
+			socket.connect(address);
+			DataInputStream in = new DataInputStream(socket.getInputStream());
+			DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+//			LogUtils.initLogger("Server.log").log(" SEND: " + vo.toJson(), false);
+			out.writeUTF(vo.toJson());
+			out.flush();
+
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			while (in.available() > 0) {
+				String response = in.readUTF();
+				if (response.contains("response")||response.contains("resultSize")) {
+					continue;
+				}
+				ResourceVO resourceVO = new Gson().fromJson(response, ResourceVO.class);
+				resourceVO.setOwner("*");
+				responseList.add(resourceVO.toJson());
+			}
+			for (Object str : responseList) {
+				if (str instanceof String) {
+					LogUtils.initLogger("Server.log").log(" RECEIVED: " + (String) str, false);
+				}
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			try {
+				socket.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		return responseList;
 	}
 

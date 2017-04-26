@@ -2,7 +2,7 @@ package VO;
 
 import java.util.ArrayList;
 
-public class ResourceVO extends AbstractVO {
+public class ResourceVO extends AbstractVO implements Cloneable {
 
 	private String name;
 	private ArrayList<String> tags;
@@ -43,7 +43,7 @@ public class ResourceVO extends AbstractVO {
 	public void setTags(ArrayList<String> tags) {
 		if(tags != null){
 			for(String t : tags){
-				t = t.replace("\0", "").trim();
+				t = t.replace("\0", "").trim().toLowerCase();
 			}
 		}
 		this.tags = tags;
@@ -108,5 +108,9 @@ public class ResourceVO extends AbstractVO {
 			this.ezserver = ezserver.replace("\0", "").trim();
 		}
 	}
-
+	@Override
+	protected Object clone() throws CloneNotSupportedException {
+		// TODO Auto-generated method stub
+		return super.clone();
+	}
 }
