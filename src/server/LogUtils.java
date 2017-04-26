@@ -30,10 +30,7 @@ public class LogUtils {
 			e.printStackTrace();
 		}
 
-		mLogger = Logger.getLogger("log");
-		for (Handler handler : mLogger.getHandlers()) {
-			mLogger.removeHandler(handler);
-		}
+		mLogger = Logger.getLogger(tag);
 		mLogger.addHandler(fileHandler);
 	}
 
