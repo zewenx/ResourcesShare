@@ -23,24 +23,45 @@ public class DataObject {
 
 	// secret only for share command
 	private String secret = "";
-
+	
+	/**
+	 * Sets secret string for SHARE command
+	 * @param secret secret key stored for the share command
+	 */
 	public void setSecret(String secret) {
 		this.secret = secret;
 	}
-	public Map<String, ResourceVO> getResourceMap()
-	{
+	
+	/**
+	 * Gets the resource Hash map to be accessed
+	 * @return Returns data Hash map
+	 */
+	public Map<String, ResourceVO> getResourceMap() {
 		return dataList0;
 	}
 	
+	/**
+	 * Removes key and resource from data hash map
+	 * @param vo ResourceVO to be removed
+	 */
 	public void removeResource(ResourceVO vo) {
 		dataList0.remove(vo.getOwner() + vo.getChannel() + vo.getUri());
 		dataList1.remove(vo.getChannel() + vo.getUri());
 	}
-
+	
+	/**
+	 * Checks to see if a ResourceVO exists in the hash map
+	 * @param vo Resource VO to be checked
+	 * @return  True - if resource exists, otherwise False
+	 */
 	public boolean isResourceExisted(ResourceVO vo) {
 		return dataList0.containsKey(vo.getOwner() + vo.getChannel() + vo.getUri());
 	}
 
+	/**
+	 * Saves a resource into the hash map
+	 * @param vo ResourceVO to be saved into the map
+	 */
 	public void saveResource(ResourceVO vo) {
 		vo.setEzserver(Server.parameters.get(Commands.advertisedhostname) + ":" + Server.parameters.get(Commands.port));
 
@@ -48,6 +69,12 @@ public class DataObject {
 		dataList1.put(vo.getChannel() + vo.getUri(), vo);
 	}
 
+	/**
+	 * Checks to see if a resource already exists on the sever which contains the same channel
+	 * and uri buy different user
+	 * @param vo ResourceVO to be checked
+	 * @return True if allowed, otherwise False
+	 */
 	public boolean isShaveOrPublishAllowed(ResourceVO vo) {
 		String key0 = vo.getOwner() + vo.getChannel() + vo.getUri();
 		String key1 = vo.getChannel() + vo.getUri();
@@ -58,10 +85,19 @@ public class DataObject {
 		return true;
 	}
 
+	/**
+	 * gets stored secret string
+	 * @return Secret String
+	 */
 	public String getSecret() {
 		return secret;
 	}
 
+	/**
+	 * checks server list to see if server already exists in the server list 
+	 * @param vo The ServerVO to be checked
+	 * @return True if server already exists on list, otherwise False
+	 */
 	public boolean isServerAlreadyExisted(ServerVO vo) {
 		for (ServerVO serverVO : serverList) {
 			if (serverVO.getHostname().equals(vo.getHostname()) && serverVO.getPort()== vo.getPort()) {
@@ -70,11 +106,19 @@ public class DataObject {
 		}
 		return false;
 	}
-
+	
+	/**
+	 * adds server to the server list
+	 * @param serverVO serverVO to be added
+	 */
 	public void addServer(ServerVO serverVO) {
 		serverList.add(serverVO);
 	}
 	
+	/**
+	 * gets server list 
+	 * @return the server list
+	 */
 	public List<ServerVO> getServerList (){
 		return serverList;
 	}

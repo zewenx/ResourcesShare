@@ -110,6 +110,7 @@ public class QueryVO extends RequestVO {
 			for(ServerVO serverVO : data.getServerList()){
 				this.setRelay(false);
 				List tempList = request(this, serverVO.getHostname(), serverVO.getPort());
+				
 				responseList.addAll(tempList);
 			}
 		}

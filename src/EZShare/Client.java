@@ -70,6 +70,7 @@ public class Client {
 	public static final String logtag = "Client.log";
 
 	public Client() {
+		//set up differnt options for input arguments
 		this.options = new Options();
 
 		options.addOption(Commands.channel, true, "channel");
@@ -162,6 +163,7 @@ public class Client {
 		vo.setResource(resourceVO);
 
 		commandLog("publishing to ");
+		//waits for response from server, returned as a list of strings
 		List<String> responseList = request(vo);
 		String response = responseList.get(0);
 		System.out.println(response);
