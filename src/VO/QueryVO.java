@@ -57,13 +57,14 @@ public class QueryVO extends RequestVO {
 		/*steps through hash map values, if it finds a conflicting result with the query
 		resource template continues the loop, otherwise adds resource to result list
 		*/
+		System.out.println("lsit: "+list.size());
 		for (ResourceVO vo : list) {
-			if (resourceTemplate.getChannel() != "") {
+			if (!resourceTemplate.getChannel().equals("")) {
 				if (!vo.getChannel().equals(resourceTemplate.getChannel())) {
 					continue;
 				}
 			}
-			if (resourceTemplate.getOwner() != "") {
+			if (!resourceTemplate.getOwner().equals("")) {
 				if (!vo.getOwner().equals(resourceTemplate.getOwner())) {
 					continue;
 				}
@@ -123,9 +124,11 @@ public class QueryVO extends RequestVO {
 		return responseList;
 	}
 	
-	List request(AbstractVO vo,String host,int port) {
+	List request(RequestVO vo,String host,int port) {
 		Socket socket = null;
 		List responseList = new ArrayList<String>();
+		DataInputStream in = null;
+		DataOutputStream out=null;
 		try {
 
 			// InetSocketAddress address = new
@@ -133,27 +136,41 @@ public class QueryVO extends RequestVO {
 			InetSocketAddress address = new InetSocketAddress(host, port);
 			socket = new Socket();
 			socket.connect(address);
-			DataInputStream in = new DataInputStream(socket.getInputStream());
-			DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+			 in = new DataInputStream(socket.getInputStream());
+			 out = new DataOutputStream(socket.getOutputStream());
 //			LogUtils.initLogger("Server.log").log(" SEND: " + vo.toJson(), false);
 			out.writeUTF(vo.toJson());
 			out.flush();
 
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 
-			while (in.available() > 0) {
+l:			while (true) {
+				
 				String response = in.readUTF();
+				
+				
+				switch(vo.getCommand().toLowerCase()){
+				case "publish":
+				case "remove":
+				case "exchange":
+				case "share":
+					if (response.contains("response")) {
+						break l;
+					}
+					break;
+				case "query":
+				case "fetch":
+					if (response.contains("resultSize")||response.contains("error")) {
+						break l;
+					}
+				}
+				
 				if (response.contains("response")||response.contains("resultSize")) {
 					continue;
 				}
 				ResourceVO resourceVO = new Gson().fromJson(response, ResourceVO.class);
 				resourceVO.setOwner("*");
 				responseList.add(resourceVO.toJson());
+				
 			}
 			for (Object str : responseList) {
 				if (str instanceof String) {
@@ -165,6 +182,8 @@ public class QueryVO extends RequestVO {
 			e.printStackTrace();
 		} finally {
 			try {
+				in.close();
+				out.close();
 				socket.close();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
