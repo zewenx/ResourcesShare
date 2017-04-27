@@ -1,3 +1,5 @@
 .settings
 bin/
 
+Server.log
+Server.log.lck
