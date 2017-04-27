@@ -26,14 +26,20 @@ public class PublishVO extends RequestVO{
 		
 		List<String> responseList = new ArrayList<String>();
 		// Error Handling
-		/*
-		 * The URI must be present, must be absolute and cannot be a file scheme.
-
-		 */
 		//if there is no resource, return error.
 		if (getResource() == null) {
 			ErrorVO vo = new ErrorVO();
 			vo.setErrorMessage("missing resource");
+			responseList.add(vo.toJson());
+			return responseList;
+		}
+		
+		//if the uri doesn't exist or is a file scheme
+		ResourceVO resourceVO = getResource();
+		String uri = resourceVO.getUri();
+		if (uri == null || uri == "" || uri.startsWith("file://")) {
+			ErrorVO vo = new ErrorVO();
+			vo.setErrorMessage("invalid resource");
 			responseList.add(vo.toJson());
 			return responseList;
 		}

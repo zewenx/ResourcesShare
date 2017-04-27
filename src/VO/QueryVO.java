@@ -54,6 +54,9 @@ public class QueryVO extends RequestVO {
 		 */
 		Collection<ResourceVO> list = data.getResourceMap().values();
 		List<ResourceVO> resultList = new ArrayList<ResourceVO>();
+		/*steps through hash map values, if it finds a conflicting result with the query
+		resource template continues the loop, otherwise adds resource to result list
+		*/
 		for (ResourceVO vo : list) {
 			if (resourceTemplate.getChannel() != "") {
 				if (!vo.getChannel().equals(resourceTemplate.getChannel())) {
