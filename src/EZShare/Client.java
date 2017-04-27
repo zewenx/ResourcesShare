@@ -31,6 +31,7 @@ import VO.AbstractVO;
 import VO.ExchangeVO;
 import VO.FetchVO;
 import VO.RemoveVO;
+import VO.RequestVO;
 import VO.ResourceVO;
 import VO.ServerVO;
 import VO.ShareVO;
@@ -382,7 +383,7 @@ public class Client {
 		}
 	}
 
-	List request(AbstractVO vo) {
+	List request(RequestVO vo) {
 		Socket socket = null;
 		List responseList = new ArrayList<String>();
 		try {
@@ -403,15 +404,34 @@ public class Client {
 			out.writeUTF(vo.toJson());
 			out.flush();
 
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-			while (in.available() > 0) {
-				responseList.add(in.readUTF());
+l:			while (true) {
+				
+				String response = in.readUTF();
+				
+				
+				switch(vo.getCommand().toLowerCase()){
+				case "publish":
+				case "remove":
+				case "exchange":
+				case "share":
+					if (response.contains("response")) {
+						break l;
+					}
+					break;
+				case "query":
+				case "fetch":
+					if (response.contains("resultSize")||response.contains("error")) {
+						break l;
+					}
+				}
+				
+				if (response.contains("response")||response.contains("resultSize")) {
+					continue;
+				}
+				ResourceVO resourceVO = new Gson().fromJson(response, ResourceVO.class);
+				resourceVO.setOwner("*");
+				responseList.add(resourceVO.toJson());
+				
 			}
 			for (Object str : responseList) {
 				if (str instanceof String) {
