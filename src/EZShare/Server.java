@@ -82,7 +82,7 @@ public class Server {
 				parameters.put(Commands.connectionintervallimit, commands.getOptionValue(Commands.connectionintervallimit));
 			}
 			if (commands.hasOption(Commands.exchangeinterval)) {
-				parameters.put(Commands.exchangeinterval, commands.getOptionValue(Commands.exchangeinterval));
+				parameters.put(Commands.exchangeinterval, ""+Integer.parseInt(commands.getOptionValue(Commands.exchangeinterval))*1000);
 			}
 			if (commands.hasOption(Commands.debug)) {
 				parameters.put(Commands.debug, "Y");
