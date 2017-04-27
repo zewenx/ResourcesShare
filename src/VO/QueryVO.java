@@ -99,7 +99,6 @@ public class QueryVO extends RequestVO {
 			}
 			
 
-			vo.setOwner("*");
 			resultList.add(vo);
 
 		}

@@ -397,6 +397,7 @@ public class Client {
 				address = new InetSocketAddress(parameters.get(Commands.host), Integer.parseInt(parameters.get(Commands.port)));
 			}
 			socket = new Socket();
+			socket.setSoTimeout(10000);
 			socket.connect(address);
 			DataInputStream in = new DataInputStream(socket.getInputStream());
 			DataOutputStream out = new DataOutputStream(socket.getOutputStream());
@@ -407,7 +408,9 @@ public class Client {
 l:			while (true) {
 				
 				String response = in.readUTF();
-				
+				if (response!=null&& response.length()>0) {
+					responseList.add(response);
+				}
 				
 				switch(vo.getCommand().toLowerCase()){
 				case "publish":
@@ -425,12 +428,7 @@ l:			while (true) {
 					}
 				}
 				
-				if (response.contains("response")||response.contains("resultSize")) {
-					continue;
-				}
-				ResourceVO resourceVO = new Gson().fromJson(response, ResourceVO.class);
-				resourceVO.setOwner("*");
-				responseList.add(resourceVO.toJson());
+				
 				
 			}
 			for (Object str : responseList) {
