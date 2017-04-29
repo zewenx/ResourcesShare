@@ -397,7 +397,7 @@ public class Client {
 				address = new InetSocketAddress(parameters.get(Commands.host), Integer.parseInt(parameters.get(Commands.port)));
 			}
 			socket = new Socket();
-			socket.setSoTimeout(10000);
+			socket.setSoTimeout(60000);
 			socket.connect(address);
 			DataInputStream in = new DataInputStream(socket.getInputStream());
 			DataOutputStream out = new DataOutputStream(socket.getOutputStream());
