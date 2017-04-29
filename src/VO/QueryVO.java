@@ -57,7 +57,6 @@ public class QueryVO extends RequestVO {
 		/*steps through hash map values, if it finds a conflicting result with the query
 		resource template continues the loop, otherwise adds resource to result list
 		*/
-		System.out.println("lsit: "+list.size());
 		for (ResourceVO vo : list) {
 			if (!resourceTemplate.getChannel().equals("")) {
 				if (!vo.getChannel().equals(resourceTemplate.getChannel())) {
@@ -181,9 +180,18 @@ l:			while (true) {
 			e.printStackTrace();
 		} finally {
 			try {
-				in.close();
-				out.close();
-				socket.close();
+				if (in != null) {
+					
+					in.close();
+				}
+				if (out != null) {
+					
+					out.close();
+				}
+				if (socket != null) {
+					
+					socket.close();
+				}
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

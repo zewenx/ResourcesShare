@@ -71,7 +71,7 @@ public class Client {
 	public static final String logtag = "Client.log";
 
 	public Client() {
-		//set up differnt options for input arguments
+		// set up differnt options for input arguments
 		this.options = new Options();
 
 		options.addOption(Commands.channel, true, "channel");
@@ -164,7 +164,7 @@ public class Client {
 		vo.setResource(resourceVO);
 
 		commandLog("publishing to ");
-		//waits for response from server, returned as a list of strings
+		// waits for response from server, returned as a list of strings
 		List<String> responseList = request(vo);
 		String response = responseList.get(0);
 		System.out.println(response);
@@ -191,14 +191,14 @@ public class Client {
 		resourceVO.setUri(commands.getOptionValue(Commands.uri));
 		resourceVO.setEzserver(null);
 		vo.setResourceTemplate(resourceVO);
-		
+
 		vo.setRelay(true);
-		
+
 		commandLog("Querying to ");
 		List<String> responseList = request(vo);
 		String response = "";
 		for (String string : responseList) {
-			response += string +'\n';
+			response += string + '\n';
 		}
 		System.out.println(response);
 	}
@@ -397,7 +397,7 @@ public class Client {
 				address = new InetSocketAddress(parameters.get(Commands.host), Integer.parseInt(parameters.get(Commands.port)));
 			}
 			socket = new Socket();
-			socket.setSoTimeout(60000);
+			socket.setSoTimeout(600000);
 			socket.connect(address);
 			DataInputStream in = new DataInputStream(socket.getInputStream());
 			DataOutputStream out = new DataOutputStream(socket.getOutputStream());
@@ -405,31 +405,36 @@ public class Client {
 			out.writeUTF(vo.toJson());
 			out.flush();
 
-l:			while (true) {
-				
-				String response = in.readUTF();
-				if (response!=null&& response.length()>0) {
+			l: while (true) {
+
+				String response = "";
+				try {
+					response = in.readUTF();
+				} catch (Exception e) {
+					e.printStackTrace();
+					break l;
+				}
+				if (response.length() > 0) {
 					responseList.add(response);
 				}
-				
-				switch(vo.getCommand().toLowerCase()){
-				case "publish":
-				case "remove":
-				case "exchange":
-				case "share":
-					if (response.contains("response")) {
-						break l;
+				if (response.length() > 0)
+					switch (vo.getCommand().toLowerCase()) {
+					case "publish":
+					case "remove":
+					case "exchange":
+					case "share":
+						if (response.contains("response")) {
+							break l;
+						}
+						break;
+					case "query":
+					case "fetch":
+						if (response.contains("resultSize") || response.contains("error")) {
+							break l;
+						}
+						break;
 					}
-					break;
-				case "query":
-				case "fetch":
-					if (response.contains("resultSize")||response.contains("error")) {
-						break l;
-					}
-				}
-				
-				
-				
+
 			}
 			for (Object str : responseList) {
 				if (str instanceof String) {
