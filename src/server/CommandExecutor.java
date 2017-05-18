@@ -17,6 +17,8 @@ import VO.QueryVO;
 import VO.RemoveVO;
 import VO.RequestVO;
 import VO.ShareVO;
+import VO.SubscribeVO;
+import VO.UnsubscribeVO;
 import netscape.javascript.JSObject;
 
 public class CommandExecutor {
@@ -54,6 +56,10 @@ public class CommandExecutor {
 			requestVO = new Gson().fromJson(requestData, ShareVO.class);
 		}else if (command.contains("query")) {
 			requestVO = new Gson().fromJson(requestData, QueryVO.class);
+		}else if (command.contains("subscribe")) {
+			requestVO = new Gson().fromJson(requestData, SubscribeVO.class);
+		}else if (command.contains("unsubscribe")) {
+			requestVO = new Gson().fromJson(requestData, UnsubscribeVO.class);
 		}else if (command.contains("fetch")) {
 			requestVO = new Gson().fromJson(requestData, FetchVO.class);
 		}else if (command.contains("exchange")) {

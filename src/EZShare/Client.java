@@ -149,6 +149,35 @@ public class Client {
 
 	private void subscribeCommand(CommandLine commands){
 		SubscribeVO vo = new SubscribeVO();
+		vo.setCommand("SUBSCRIBE");
+		vo.setID(commands.getOptionValue(Commands.id));
+		
+		// sets values for data resources
+				ResourceVO resourceVO = new ResourceVO();
+				resourceVO.setChannel(commands.getOptionValue(Commands.channel));
+				resourceVO.setDescription(commands.getOptionValue(Commands.description));
+				resourceVO.setName(commands.getOptionValue(Commands.name));
+				resourceVO.setOwner(commands.getOptionValue(Commands.owner));
+				String tags = commands.getOptionValue(Commands.tags);
+				ArrayList<String> taglist = new ArrayList<String>();
+				if (tags != null & tags != "") {
+					for (String string : tags.split(",")) {
+						taglist.add(string);
+					}
+				}
+				resourceVO.setTags(taglist);
+				resourceVO.setUri(commands.getOptionValue(Commands.uri));
+				resourceVO.setEzserver(null);
+				vo.setResource(resourceVO);
+				
+				//setup connection
+				commandLog("subscribing to ");
+				List<String> responseList = request(vo);
+				String response = responseList.get(0);
+				System.out.println(response);
+				
+				//establish channel
+				
 	}
 	
 	private void unsubscribeCommand(CommandLine commands){
@@ -447,6 +476,8 @@ public class Client {
 							break l;
 						}
 						break;
+					case "subscribe":
+						
 					}
 
 			}

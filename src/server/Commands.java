@@ -26,4 +26,5 @@ public class Commands {
 	public static String servers ="servers";
 	public static String subscribe ="subscribe";
 	public static String unsubscribe ="unsubscribe";
+	public static String id = "id";
 }
