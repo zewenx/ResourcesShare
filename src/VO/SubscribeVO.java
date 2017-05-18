@@ -32,7 +32,7 @@ public class SubscribeVO extends RequestVO{
 	public List<String> execute(DataObject data) {
 		List<String> responseList = new ArrayList<String>();
 		//Error Handling
-		if(id == null){
+		if(id.equals(null)||id.equals("")){
 			ErrorVO vo = new ErrorVO();
 			vo.setErrorMessage("missing id");
 			responseList.add(vo.toJson());

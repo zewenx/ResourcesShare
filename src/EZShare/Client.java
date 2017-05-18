@@ -92,9 +92,10 @@ public class Client {
 		options.addOption(Commands.share, false, "share resource on server");
 		options.addOption(Commands.tags, true, "resource tags, tag1,tag2,tag3,...");
 		options.addOption(Commands.uri, true, "resource URI");
-		options.addOption(Commands.subscribe, true, "subscribe to query responses of the server");
+		options.addOption(Commands.subscribe, false, "subscribe to query responses of the server");
 		options.addOption(Commands.unsubscribe, true, "unsubscribe from query responses of the server");
 		options.addOption(Commands.help, false, "help");
+		options.addOption(Commands.id, false, "subscription id");
 	}
 
 	public static void main(String[] args) {
@@ -104,6 +105,7 @@ public class Client {
 	public void start(String[] args) {
 		CommandLineParser parser = new DefaultParser();
 		try {
+			
 			CommandLine commands = parser.parse(options, args);
 
 			if (commands.hasOption(Commands.help)) {
@@ -149,6 +151,7 @@ public class Client {
 
 	private void subscribeCommand(CommandLine commands){
 		SubscribeVO vo = new SubscribeVO();
+		System.out.println("here");
 		vo.setCommand("SUBSCRIBE");
 		vo.setID(commands.getOptionValue(Commands.id));
 		
@@ -172,7 +175,9 @@ public class Client {
 				
 				//setup connection
 				commandLog("subscribing to ");
+			//TODO need to change this!!!!!!!!!!!!!!!!!
 				List<String> responseList = request(vo);
+			//TODO ------------------------------------
 				String response = responseList.get(0);
 				System.out.println(response);
 				
