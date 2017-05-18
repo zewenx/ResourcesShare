@@ -38,6 +38,7 @@ import VO.ShareVO;
 import VO.PublishVO;
 import VO.QueryVO;
 import VO.SpecialResourceVO;
+import VO.SubscribeVO;
 import javafx.scene.effect.FloatMap;
 import server.Commands;
 import server.LogUtils;
@@ -91,7 +92,8 @@ public class Client {
 		options.addOption(Commands.share, false, "share resource on server");
 		options.addOption(Commands.tags, true, "resource tags, tag1,tag2,tag3,...");
 		options.addOption(Commands.uri, true, "resource URI");
-
+		options.addOption(Commands.subscribe, true, "subscribe to query responses of the server");
+		options.addOption(Commands.unsubscribe, true, "unsubscribe from query responses of the server");
 		options.addOption(Commands.help, false, "help");
 	}
 
@@ -108,7 +110,7 @@ public class Client {
 				new HelpFormatter().printHelp("java -cp ezshare.jar EZShare.Client", options);
 				return;
 			}
-
+			
 			if (commands.hasOption(Commands.port) && commands.hasOption(Commands.host)) {
 				defaultHost = false;
 				parameters.put(Commands.port, commands.getOptionValue(Commands.port));
@@ -121,6 +123,10 @@ public class Client {
 
 			if (commands.hasOption(Commands.publish)) {
 				publishCommand(commands);
+			} else if(commands.hasOption(Commands.subscribe)) {
+				subscribeCommand(commands);
+			} else if(commands.hasOption(Commands.unsubscribe)) {
+				unsubscribeCommand(commands);
 			} else if (commands.hasOption(Commands.exchange)) {
 				exchangeCommand(commands);
 			} else if (commands.hasOption(Commands.fetch)) {
@@ -141,6 +147,14 @@ public class Client {
 		}
 	}
 
+	private void subscribeCommand(CommandLine commands){
+		SubscribeVO vo = new SubscribeVO();
+	}
+	
+	private void unsubscribeCommand(CommandLine commands){
+		
+	}
+	
 	private void publishCommand(CommandLine commands) {
 		PublishVO vo = new PublishVO();
 		vo.setCommand("PUBLISH");
