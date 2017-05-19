@@ -39,6 +39,7 @@ import VO.PublishVO;
 import VO.QueryVO;
 import VO.SpecialResourceVO;
 import VO.SubscribeVO;
+import client.ConnectionThread;
 import javafx.scene.effect.FloatMap;
 import server.Commands;
 import server.LogUtils;
@@ -175,13 +176,8 @@ public class Client {
 				
 				//setup connection
 				commandLog("subscribing to ");
-			//TODO need to change this!!!!!!!!!!!!!!!!!
-				List<String> responseList = request(vo);
-			//TODO ------------------------------------
-				String response = responseList.get(0);
-				System.out.println(response);
-				
-				//establish channel
+				subscribe(vo);
+
 				
 	}
 	
@@ -432,56 +428,17 @@ public class Client {
 	}
 	//subscribe to the server
 	void subscribe(RequestVO vo){
-		Socket socket = null;
-		//create new thread
-		
-		//connect to the server
-		try {
-
-			// InetSocketAddress address = new
-			// InetSocketAddress("sunrise.cis.unimelb.edu.au", 3780);
-			InetSocketAddress address = null;
-			if (defaultHost) {
-				address = new InetSocketAddress("127.0.0.1", 8888);
-			} else {
-				address = new InetSocketAddress(parameters.get(Commands.host), Integer.parseInt(parameters.get(Commands.port)));
-			}
-			socket = new Socket();
-			socket.setKeepAlive(true);
-			socket.setSoTimeout(600000);
-			socket.connect(address);
-			DataInputStream in = new DataInputStream(socket.getInputStream());
-			DataOutputStream out = new DataOutputStream(socket.getOutputStream());
-			LogUtils.initLogger(logtag).log(" SEND: " + vo.toJson(), debug);
-			out.writeUTF(vo.toJson());
-			out.flush();
-			while(true){
-				String response = "";
-				try {
-					response = in.readUTF();
-				} catch (Exception e) {
-					e.printStackTrace();
-					break;
-				}
-				if (response.length() > 0) {
-					System.out.println(response);
-					if(response.contains("resultSize")||response.contains("error")) {
-						break;
-					}					
-				}
-			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} finally {
-			try {
-				socket.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-		}		
-	}
-		
+		Thread connectionThread = null;
+		// InetSocketAddress address = new
+		// InetSocketAddress("sunrise.cis.unimelb.edu.au", 3780);
+		InetSocketAddress address = null;
+		if (defaultHost) {
+			connectionThread = new Thread(new ConnectionThread(vo, debug));
+			
+		} else {
+			connectionThread = new Thread(new ConnectionThread(parameters.get(Commands.host), Integer.parseInt(parameters.get(Commands.port)),vo, debug));//parameters.get(Commands.host), Integer.parseInt(parameters.get(Commands.port)
+		}
+		connectionThread.start();
 	}
 	
 	List request(RequestVO vo) {
