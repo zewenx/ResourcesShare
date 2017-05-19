@@ -17,12 +17,18 @@ public class SubscribeVO extends RequestVO{
 	public void setID(String id){
 		this.id = id;
 	}
-
+	public boolean isResourceSame(ResourceVO resource)
+	{
+		return resourceTemplate.equals(resource);
+	}
 	public void setRelay(boolean relay) {
 		this.relay = relay;
 	}
 	public ResourceVO getResourceTemplate() {
 		return resourceTemplate;
+	}
+	public String getId() {
+		return id;
 	}
 
 	public void setResource(ResourceVO resourceTemplate) {

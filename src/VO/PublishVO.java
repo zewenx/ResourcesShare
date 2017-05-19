@@ -8,6 +8,7 @@ import javax.print.attribute.standard.PrinterMessageFromOperator;
 import com.sun.javafx.collections.MappingChange.Map;
 
 import server.DataObject;
+import server.SubscriptionHandler;
 
 public class PublishVO extends RequestVO{
 	private ResourceVO resource;
@@ -66,7 +67,8 @@ public class PublishVO extends RequestVO{
 		SuccessVO successVO = new SuccessVO();
 		responseList.add(successVO.toJson());
 		
-		//testing
+		//check for subscriptions to notify
+		SubscriptionHandler.checkResource(resource);
 		return responseList;
 	}
 	

@@ -430,7 +430,60 @@ public class Client {
 			LogUtils.initLogger(logtag).log(commandInfo + parameters.get(Commands.host) + ":" + parameters.get(Commands.port), debug);
 		}
 	}
+	//subscribe to the server
+	void subscribe(RequestVO vo){
+		Socket socket = null;
+		//create new thread
+		
+		//connect to the server
+		try {
 
+			// InetSocketAddress address = new
+			// InetSocketAddress("sunrise.cis.unimelb.edu.au", 3780);
+			InetSocketAddress address = null;
+			if (defaultHost) {
+				address = new InetSocketAddress("127.0.0.1", 8888);
+			} else {
+				address = new InetSocketAddress(parameters.get(Commands.host), Integer.parseInt(parameters.get(Commands.port)));
+			}
+			socket = new Socket();
+			socket.setKeepAlive(true);
+			socket.setSoTimeout(600000);
+			socket.connect(address);
+			DataInputStream in = new DataInputStream(socket.getInputStream());
+			DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+			LogUtils.initLogger(logtag).log(" SEND: " + vo.toJson(), debug);
+			out.writeUTF(vo.toJson());
+			out.flush();
+			while(true){
+				String response = "";
+				try {
+					response = in.readUTF();
+				} catch (Exception e) {
+					e.printStackTrace();
+					break;
+				}
+				if (response.length() > 0) {
+					System.out.println(response);
+					if(response.contains("resultSize")||response.contains("error")) {
+						break;
+					}					
+				}
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			try {
+				socket.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+		}		
+	}
+		
+	}
+	
 	List request(RequestVO vo) {
 		Socket socket = null;
 		List responseList = new ArrayList<String>();
@@ -480,9 +533,7 @@ public class Client {
 						if (response.contains("resultSize") || response.contains("error")) {
 							break l;
 						}
-						break;
-					case "subscribe":
-						
+						break;					
 					}
 
 			}
