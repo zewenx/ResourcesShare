@@ -17,12 +17,15 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
+import com.sun.media.jfxmedia.events.NewFrameEvent;
 import com.sun.org.apache.bcel.internal.generic.NEW;
 
 import server.Commands;
 import server.ConnectionThread;
 import server.InteractionThread;
 import server.LogUtils;
+import server.Network;
+import server.SecureNetwork;
 import server.ThreadPoolManager;
 
 public class Server {
@@ -44,6 +47,7 @@ public class Server {
 		parameters.put(Commands.secret, "123443211234");
 		parameters.put(Commands.connectionintervallimit, "1");
 		parameters.put(Commands.debug, "N");
+		parameters.put(Commands.sport, "3781");
 
 		options.addOption(Commands.advertisedhostname, true, "advertised hostname");
 		options.addOption(Commands.connectionintervallimit, true, "connection interval limit in seconds");
@@ -51,6 +55,7 @@ public class Server {
 		options.addOption(Commands.port, true, "server port, an integer");
 		options.addOption(Commands.secret, true, "secret");
 		options.addOption(Commands.debug, false, "print debug information");
+		options.addOption(Commands.sport, false, "secure port");
 
 		options.addOption(Commands.help, false, "help");
 	}
@@ -87,12 +92,18 @@ public class Server {
 			if (commands.hasOption(Commands.debug)) {
 				parameters.put(Commands.debug, "Y");
 			}
+			if(commands.hasOption(Commands.sport)){
+				parameters.put(Commands.sport, commands.getOptionValue(Commands.sport));
+			}
+			
+			
 			debug = ("Y".equals(parameters.get(Commands.debug)));
 
 			LogUtils.initLogger(logtag).log("Starting the EZShare Server", true);
 			LogUtils.initLogger(logtag).log("using secret: " + parameters.get(Commands.secret), true);
 			LogUtils.initLogger(logtag).log("using advertised hostname: " + parameters.get(Commands.advertisedhostname),true);
 			LogUtils.initLogger(logtag).log("bound to port " + parameters.get(Commands.port), true);
+			LogUtils.initLogger(logtag).log("bound to secure port " + parameters.get(Commands.sport), true);
 			LogUtils.initLogger(logtag).log("started", true);
 
 		} catch (ParseException e) {
@@ -103,33 +114,16 @@ public class Server {
 	}
 
 	private void startServer() {
+		
+//		System.setProperty("javax.net.ssl.keyStore","serverKeystore/aGreatName");
+		//Password to access the private key from the keystore file
+//		System.setProperty("javax.net.ssl.keyStorePassword","comp90015");
 
-		try {
-			ServerSocket listenSocket = new ServerSocket(Integer.parseInt(parameters.get(Commands.port)));
-			new Thread(new InteractionThread(parameters.get(Commands.exchangeinterval), parameters.get(Commands.debug).equals("Y"))).start();
-			while (true) {
-				Socket clientSocket = listenSocket.accept();
-				
-				String ip = clientSocket.getInetAddress().getHostAddress();
-				Long currentTime = System.currentTimeMillis();
-				if (clientIP.containsKey(ip)) {
-					if (currentTime - clientIP.get(ip) < 1000*Long.parseLong(parameters.get(Commands.connectionintervallimit))) {
-						LogUtils.initLogger(logtag).log("reject a connection from " +ip, true);
-						continue;
-					}
-				}
-				clientIP.put(ip, currentTime);
-				
-				ConnectionThread connectionThread = new ConnectionThread(clientSocket);
-				ThreadPoolManager.init().submitThread(connectionThread);
-				Thread.sleep(Long.parseLong(parameters.get(Commands.connectionintervallimit)));
-			}
-		} catch (NumberFormatException e) {
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		// Enable debugging to view the handshake and communication which happens between the SSLClient and the SSLServer
+//		System.setProperty("javax.net.debug","all");
+		
+		new Thread(new Network(parameters,logtag)).start();
+		new Thread(new SecureNetwork(parameters,logtag)).start();
+		
 	}
 }

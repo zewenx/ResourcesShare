@@ -25,6 +25,7 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.io.FileUtils;
 
 import com.google.gson.Gson;
+import com.sun.org.apache.xml.internal.security.Init;
 import com.sun.org.apache.xpath.internal.operations.And;
 
 import VO.AbstractVO;
@@ -40,6 +41,8 @@ import VO.QueryVO;
 import VO.SpecialResourceVO;
 import VO.SubscribeVO;
 import client.ConnectionThread;
+import client.Network;
+import client.OptionInit;
 import javafx.scene.effect.FloatMap;
 import server.Commands;
 import server.LogUtils;
@@ -48,55 +51,28 @@ import sun.util.logging.resources.logging;
 
 public class Client {
 
-	// -channel <arg> channel
-	// -debug print debug information
-	// -description <arg> resource description
-	// -exchange exchange server list with server
-	// -fetch fetch resources from server
-	// -host <arg> server host, a domain name or IP address
-	// -name <arg> resource name
-	// -owner <arg> owner
-	// -port <arg> server port, an integer
-	// -publish publish resource on servers
-	// -query query for resources from server
-	// -remove remove resource from server
-	// -secret <arg> secret
-	// -servers <arg> server list, host1:port1,host2:port2,...
-	// -share share resource on server
-	// -tags <arg> resource tags, tag1,tag2,tag3,...
-	// -uri <arg> resource URI
-
 	Map<String, String> parameters = new HashMap<String, String>();
 	Options options;
 	boolean debug = false;
-	boolean defaultHost = true;
+	boolean isSecureConnection = false;
 	public static final String logtag = "Client.log";
+	Network network;
 
 	public Client() {
-		// set up differnt options for input arguments
-		this.options = new Options();
 
-		options.addOption(Commands.channel, true, "channel");
-		options.addOption(Commands.debug, false, "print debug information");
-		options.addOption(Commands.description, true, "resource description");
-		options.addOption(Commands.exchange, false, "exchange server list with server");
-		options.addOption(Commands.secret, true, "secret");
-		options.addOption(Commands.port, true, "server port, an integer");
-		options.addOption(Commands.fetch, false, "fetch resources from server");
-		options.addOption(Commands.host, true, "server host, a domain name or IP address");
-		options.addOption(Commands.name, true, "resource name");
-		options.addOption(Commands.owner, true, "owner");
-		options.addOption(Commands.publish, false, "publish resource on server");
-		options.addOption(Commands.query, false, "query for resources from server");
-		options.addOption(Commands.remove, false, "remove resource from server");
-		options.addOption(Commands.servers, true, "server list, host1:port1,host2:port2,...");
-		options.addOption(Commands.share, false, "share resource on server");
-		options.addOption(Commands.tags, true, "resource tags, tag1,tag2,tag3,...");
-		options.addOption(Commands.uri, true, "resource URI");
-		options.addOption(Commands.subscribe, false, "subscribe to query responses of the server");
-		options.addOption(Commands.unsubscribe, true, "unsubscribe from query responses of the server");
-		options.addOption(Commands.help, false, "help");
-		options.addOption(Commands.id, false, "subscription id");
+
+//		options.addOption(Commands.subscribe, false, "subscribe to query responses of the server");
+//		options.addOption(Commands.unsubscribe, true, "unsubscribe from query responses of the server");
+
+//		options.addOption(Commands.id, false, "subscription id");
+		init();
+	}
+
+	private void init() {
+		this.options = new Options();
+		new OptionInit().initOptions(options);
+		parameters.put(Commands.port, "3780");
+		parameters.put(Commands.host, "127.0.0.1");
 	}
 
 	public static void main(String[] args) {
@@ -113,16 +89,26 @@ public class Client {
 				new HelpFormatter().printHelp("java -cp ezshare.jar EZShare.Client", options);
 				return;
 			}
-			
-			if (commands.hasOption(Commands.port) && commands.hasOption(Commands.host)) {
-				defaultHost = false;
+
+
+			if (commands.hasOption(Commands.secure)) {
+				this.isSecureConnection = true;
+			}
+
+			if (commands.hasOption(Commands.port)) {
 				parameters.put(Commands.port, commands.getOptionValue(Commands.port));
+			}
+
+			if (commands.hasOption(Commands.host)) {
 				parameters.put(Commands.host, commands.getOptionValue(Commands.host));
 			}
 
 			if (commands.hasOption(Commands.debug)) {
 				debug = true;
 			}
+			
+			network = new Network(parameters, debug, logtag,isSecureConnection);
+			
 
 			if (commands.hasOption(Commands.publish)) {
 				publishCommand(commands);
@@ -209,7 +195,7 @@ public class Client {
 
 		commandLog("publishing to ");
 		// waits for response from server, returned as a list of strings
-		List<String> responseList = request(vo);
+		List<String> responseList = network.request(vo);
 		String response = responseList.get(0);
 		System.out.println(response);
 	}
@@ -239,7 +225,7 @@ public class Client {
 		vo.setRelay(true);
 
 		commandLog("Querying to ");
-		List<String> responseList = request(vo);
+		List<String> responseList = network.request(vo);
 		String response = "";
 		for (String string : responseList) {
 			response += string + '\n';
@@ -274,12 +260,8 @@ public class Client {
 
 			// InetSocketAddress address = new
 			// InetSocketAddress("sunrise.cis.unimelb.edu.au", 3780);
-			InetSocketAddress address = null;
-			if (defaultHost) {
-				address = new InetSocketAddress("127.0.0.1", 8888);
-			} else {
-				address = new InetSocketAddress(parameters.get(Commands.host), Integer.parseInt(parameters.get(Commands.port)));
-			}
+			InetSocketAddress address = new InetSocketAddress(parameters.get(Commands.host),
+					Integer.parseInt(parameters.get(Commands.port)));
 			socket = new Socket();
 			socket.connect(address);
 			DataInputStream in = new DataInputStream(socket.getInputStream());
@@ -361,7 +343,7 @@ public class Client {
 
 		commandLog("removing to ");
 
-		List<String> responseList = request(vo);
+		List<String> responseList = network.request(vo);
 		String response = responseList.get(0);
 		System.out.println(response);
 	}
@@ -392,7 +374,7 @@ public class Client {
 
 		commandLog("sharing to ");
 
-		List responseList = request(vo);
+		List responseList =network.request(vo);
 		String response = (String) responseList.get(0);
 		System.out.println(response);
 	}
@@ -411,7 +393,7 @@ public class Client {
 			serverList.add(serverVO);
 		}
 		vo.setServerList(serverList);
-		List<String> responseList = request(vo);
+		List<String> responseList = network.request(vo);
 
 		commandLog("exchanging to ");
 		String response = responseList.get(0);
@@ -420,12 +402,10 @@ public class Client {
 
 	void commandLog(String commandInfo) {
 		LogUtils.initLogger(logtag).log("setting debug on", debug);
-		if (defaultHost) {
-			LogUtils.initLogger(logtag).log(commandInfo + "localhost:8888", debug);
-		} else {
-			LogUtils.initLogger(logtag).log(commandInfo + parameters.get(Commands.host) + ":" + parameters.get(Commands.port), debug);
-		}
+		LogUtils.initLogger(logtag)
+				.log(commandInfo + parameters.get(Commands.host) + ":" + parameters.get(Commands.port), debug);
 	}
+
 	//subscribe to the server
 	void subscribe(RequestVO vo){
 		Thread connectionThread = null;

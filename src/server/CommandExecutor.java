@@ -16,6 +16,8 @@ import VO.PublishVO;
 import VO.QueryVO;
 import VO.RemoveVO;
 import VO.RequestVO;
+import VO.SecureExchangeVO;
+import VO.SecureQueryVO;
 import VO.ShareVO;
 import VO.SubscribeVO;
 import VO.UnsubscribeVO;
@@ -24,49 +26,59 @@ import netscape.javascript.JSObject;
 public class CommandExecutor {
 	static private CommandExecutor mCommandExecutor;
 	private DataObject data;
-	
+
 	private CommandExecutor() {
 		data = new DataObject();
 		data.setSecret(Server.parameters.get(Commands.secret));
 	}
-	
-	static CommandExecutor init(){
+
+	static CommandExecutor init() {
 		if (mCommandExecutor == null) {
 			mCommandExecutor = new CommandExecutor();
 		}
 		return mCommandExecutor;
 	}
-	
-	public DataObject getDataObject(){
+
+	public DataObject getDataObject() {
 		return data;
 	}
 
-	synchronized List<String> submit(String requestData) {
+	synchronized List<String> submit(String requestData, boolean isSecureSocket) {
 		JsonParser parser = new JsonParser();
-		JsonObject jsonObject  =parser.parse(requestData).getAsJsonObject();
-		
+		JsonObject jsonObject = parser.parse(requestData).getAsJsonObject();
+
 		JsonElement commandElement = jsonObject.get("command");
 		String command = commandElement.toString().toLowerCase();
 		RequestVO requestVO = null;
 		if (command.contains("publish")) {
 			requestVO = new Gson().fromJson(requestData, PublishVO.class);
-		}else if (command.contains("remove")) {
+		} else if (command.contains("remove")) {
 			requestVO = new Gson().fromJson(requestData, RemoveVO.class);
-		}else if (command.contains("share")) {
+		} else if (command.contains("share")) {
 			requestVO = new Gson().fromJson(requestData, ShareVO.class);
-		}else if (command.contains("query")) {
-			requestVO = new Gson().fromJson(requestData, QueryVO.class);
+
 		}else if (command.contains("subscribe")) {
 			requestVO = new Gson().fromJson(requestData, SubscribeVO.class);
 		}else if (command.contains("unsubscribe")) {
 			requestVO = new Gson().fromJson(requestData, UnsubscribeVO.class);
-		}else if (command.contains("fetch")) {
+
+		} else if (command.contains("query")) {
+			if (isSecureSocket) {
+				requestVO = new Gson().fromJson(requestData, SecureQueryVO.class);
+			} else {
+				requestVO = new Gson().fromJson(requestData, QueryVO.class);
+			}
+		} else if (command.contains("fetch")) {
 			requestVO = new Gson().fromJson(requestData, FetchVO.class);
-		}else if (command.contains("exchange")) {
-			requestVO = new Gson().fromJson(requestData, ExchangeVO.class);
+		} else if (command.contains("exchange")) {
+			if (isSecureSocket) {
+				requestVO = new Gson().fromJson(requestData, SecureExchangeVO.class);
+			} else {
+				requestVO = new Gson().fromJson(requestData, ExchangeVO.class);
+			}
 		}
-		
-		List<String> responseList =  requestVO.execute(data);
+
+		List<String> responseList = requestVO.execute(data);
 		return responseList;
 	}
 

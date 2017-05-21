@@ -25,6 +25,9 @@ public class DataObject {
 
 	// ServerList
 	List<ServerVO> serverList = new ArrayList<ServerVO>();
+	
+	// secure severlist
+	List<ServerVO> secureServerList = new ArrayList<ServerVO>();
 
 	// add to sub hash map
 	public void addSubscriber(String id, SubscribeVO data){
@@ -127,6 +130,20 @@ public class DataObject {
 	}
 	
 	/**
+	 * checks secure server list to see if server already exists in the server list 
+	 * @param vo The ServerVO to be checked
+	 * @return True if server already exists on list, otherwise False
+	 */
+	public boolean isSecureServerAlreadyExisted(ServerVO vo) {
+		for (ServerVO serverVO : secureServerList) {
+			if (serverVO.getHostname().equals(vo.getHostname()) && serverVO.getPort()== vo.getPort()) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
 	 * adds server to the server list
 	 * @param serverVO serverVO to be added
 	 */
@@ -135,11 +152,27 @@ public class DataObject {
 	}
 	
 	/**
+	 * adds server to the secure server list
+	 * @param serverVO serverVO to be added
+	 */
+	public void addServer2SecureList(ServerVO serverVO) {
+		secureServerList.add(serverVO);
+	}
+	
+	/**
 	 * gets server list 
 	 * @return the server list
 	 */
 	public List<ServerVO> getServerList (){
 		return serverList;
+	}
+	
+	/**
+	 * gets secure server list 
+	 * @return the server list
+	 */
+	public List<ServerVO> getSecureServerList (){
+		return secureServerList;
 	}
 	
 	public String toString(){

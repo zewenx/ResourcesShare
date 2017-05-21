@@ -27,4 +27,9 @@ public class Commands {
 	public static String subscribe ="subscribe";
 	public static String unsubscribe ="unsubscribe";
 	public static String id = "id";
+
+	
+	public static String secure = "secure";
+	public static String sport = "sport";
+
 }
