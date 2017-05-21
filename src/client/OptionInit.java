@@ -42,7 +42,7 @@ public class OptionInit {
 		options.addOption(Commands.share, false, "share resource on server");
 		options.addOption(Commands.tags, true, "resource tags, tag1,tag2,tag3,...");
 		options.addOption(Commands.uri, true, "resource URI");
-		options.addOption(Commands.secure, true, "secure connecton");
+		options.addOption(Commands.secure, false, "secure connecton");
 		options.addOption(Commands.subscribe, false, "subscribe to query responses of the server");
 		options.addOption(Commands.unsubscribe, false, "unsubscribe from query responses of the server");
 

@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.List;
 
+import javax.net.ssl.SSLSocket;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.sun.corba.se.spi.ior.Writeable;
@@ -40,7 +42,7 @@ public class ConnectionThread implements Runnable {
 			LogUtils.initLogger(Server.logtag).log(" RECEIVED: "+data, Server.debug);
 			CommandExecutor commandExecutor = CommandExecutor.init();
 			commandExecutor.setInputOutputStream(in, out);
-			List responseData = commandExecutor.submit(data, false); //TODO SECURITY STUFF
+			List responseData = commandExecutor.submit(data, mSocket instanceof SSLSocket); //TODO SECURITY STUFF
 			
 			for (Object o : responseData) {
 				if (o instanceof String) {

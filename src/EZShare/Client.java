@@ -43,6 +43,7 @@ import VO.SubscribeVO;
 import client.ConnectionThread;
 import client.Network;
 import client.OptionInit;
+import client.SecureNetwork;
 import javafx.scene.effect.FloatMap;
 import server.Commands;
 import server.LogUtils;
@@ -56,7 +57,7 @@ public class Client {
 	boolean debug = false;
 	boolean isSecureConnection = false;
 	public static final String logtag = "Client.log";
-	Network network;
+	SecureNetwork network;
 
 	public Client() {
 
@@ -88,8 +89,20 @@ public class Client {
 
 			if (commands.hasOption(Commands.secure)) {
 				this.isSecureConnection = true;
+				System.setProperty("javax.net.ssl.keyStore","files/client/pkclient.keystore");
+				System.setProperty("javax.net.ssl.keyStorePassword","111111");
+				System.setProperty("javax.net.ssl.trustStore", "files/client/tclient");  
+		        System.setProperty("javax.net.ssl.trustStorePassword", "111111"); 
+//		        System.setProperty("javax.net.debug","all");
+				
 			}
 
+			if (isSecureConnection) {
+				parameters.put(Commands.port, "3781");
+			}else {
+				parameters.put(Commands.port, "3780");
+			}
+			
 			if (commands.hasOption(Commands.port)) {
 				parameters.put(Commands.port, commands.getOptionValue(Commands.port));
 			}
@@ -102,7 +115,7 @@ public class Client {
 				debug = true;
 			}
 			
-			network = new Network(parameters, debug, logtag,isSecureConnection);
+			network = new SecureNetwork(parameters, debug, logtag,isSecureConnection);
 			
 
 			if (commands.hasOption(Commands.publish)) {
@@ -251,69 +264,7 @@ public class Client {
 
 		commandLog("fetching to ");
 
-		Socket socket = null;
-		try {
-
-			// InetSocketAddress address = new
-			// InetSocketAddress("sunrise.cis.unimelb.edu.au", 3780);
-			InetSocketAddress address = new InetSocketAddress(parameters.get(Commands.host),
-					Integer.parseInt(parameters.get(Commands.port)));
-			socket = new Socket();
-			socket.connect(address);
-			DataInputStream in = new DataInputStream(socket.getInputStream());
-			DataOutputStream out = new DataOutputStream(socket.getOutputStream());
-			LogUtils.initLogger(logtag).log(" SEND: " + vo.toJson(), debug);
-			out.writeUTF(vo.toJson());
-			out.flush();
-
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-			String response = in.readUTF();
-
-			LogUtils.initLogger(logtag).log(" RECEIVED: " + response, debug);
-			System.out.println(response);
-
-			if (response.contains("error")) {
-				System.out.println(response);
-				return;
-			}
-			SpecialResourceVO specialResourceVO = new Gson().fromJson(in.readUTF(), SpecialResourceVO.class);
-			LogUtils.initLogger(logtag).log(" RECEIVED: " + specialResourceVO.toJson(), debug);
-
-			File file = new File(new URI(specialResourceVO.getUri()));
-			String fileName = file.getName();
-			File dataFile = new File(fileName);
-			if (dataFile.exists()) {
-				dataFile.delete();
-			}
-			dataFile.createNewFile();
-			byte[] datas = new byte[(int) specialResourceVO.getResourceSize() + 1];
-			int count = 0;
-			while (count < specialResourceVO.getResourceSize()) {
-				count += in.read(datas, count, (int) (specialResourceVO.getResourceSize()) - count);
-			}
-			FileUtils.writeByteArrayToFile(dataFile, datas);
-
-			LogUtils.initLogger(logtag).log(" RECEIVED: " + in.readUTF(), debug);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} finally {
-			try {
-				socket.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
+		network.fetchRequest(vo);
 
 	}
 
@@ -399,7 +350,7 @@ public class Client {
 	void commandLog(String commandInfo) {
 		LogUtils.initLogger(logtag).log("setting debug on", debug);
 		LogUtils.initLogger(logtag)
-				.log(commandInfo + parameters.get(Commands.host) + ":" + parameters.get(Commands.port), debug);
+				.log(commandInfo + parameters.get(Commands.host) + ":" + (isSecureConnection?parameters.get(Commands.sport):parameters.get(Commands.port)), debug);
 	}
 
 	//subscribe to the server
