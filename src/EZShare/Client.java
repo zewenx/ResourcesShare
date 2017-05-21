@@ -60,11 +60,6 @@ public class Client {
 
 	public Client() {
 
-
-//		options.addOption(Commands.subscribe, false, "subscribe to query responses of the server");
-//		options.addOption(Commands.unsubscribe, true, "unsubscribe from query responses of the server");
-
-//		options.addOption(Commands.id, false, "subscription id");
 		init();
 	}
 
@@ -140,6 +135,7 @@ public class Client {
 		SubscribeVO vo = new SubscribeVO();
 		System.out.println("here");
 		vo.setCommand("SUBSCRIBE");
+		System.out.println(commands.getOptionValue(Commands.id));
 		vo.setID(commands.getOptionValue(Commands.id));
 		
 		// sets values for data resources

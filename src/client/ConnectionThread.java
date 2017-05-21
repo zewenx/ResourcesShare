@@ -35,18 +35,18 @@ public class ConnectionThread implements Runnable{
 			LogUtils.initLogger(EZShare.Client.logtag).log(" SEND: " + vo.toJson(), debug);
 			out.writeUTF(vo.toJson());
 			out.flush();
-			while(true){
+			l:while(true){
 				String response = "";
 				try {
 					response = in.readUTF();
 				} catch (Exception e) {
 					e.printStackTrace();
-					break;
+					break l;
 				}
 				if (response.length() > 0) {
 					System.out.println(response);
 					if(response.contains("resultSize")||response.contains("error")) {
-						break;
+						break l;
 					}					
 				}
 			}

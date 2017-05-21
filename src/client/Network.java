@@ -77,6 +77,10 @@ public class Network {
 							break l;
 						}
 						break;
+					case "subscribe":
+						if(response.contains("response")){
+							break l;
+						}
 					}
 
 			}

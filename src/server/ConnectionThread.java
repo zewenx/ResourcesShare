@@ -38,7 +38,10 @@ public class ConnectionThread implements Runnable {
 		try {
 			String data = in.readUTF();
 			LogUtils.initLogger(Server.logtag).log(" RECEIVED: "+data, Server.debug);
-			List responseData = CommandExecutor.init().submit(data, false); //TODO SECURITY STUFF
+			CommandExecutor commandExecutor = CommandExecutor.init();
+			commandExecutor.setInputOutputStream(in, out);
+			List responseData = commandExecutor.submit(data, false); //TODO SECURITY STUFF
+			
 			for (Object o : responseData) {
 				if (o instanceof String) {
 					out.writeUTF((String) o);

@@ -1,5 +1,8 @@
 package VO;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,10 +11,17 @@ import server.DataObject;
 public class SubscribeVO extends RequestVO{
 	boolean relay;
 	private ResourceVO resourceTemplate;
-	private String id;
+	private String id = "";
+	private DataInputStream in;
+	private DataOutputStream out;
 	
 	public boolean isRelay() {
 		return relay;
+	}
+	
+	public void setInputOutputStream(DataInputStream in,DataOutputStream out) {
+		this.in = in;
+		this.out = out;
 	}
 	
 	public void setID(String id){
@@ -38,7 +48,7 @@ public class SubscribeVO extends RequestVO{
 	public List<String> execute(DataObject data) {
 		List<String> responseList = new ArrayList<String>();
 		//Error Handling
-		if(id.equals(null)||id.equals("")){
+		if(this.id.equals("")){
 			ErrorVO vo = new ErrorVO();
 			vo.setErrorMessage("missing id");
 			responseList.add(vo.toJson());
@@ -54,7 +64,18 @@ public class SubscribeVO extends RequestVO{
 		//Process
 		data.addSubscriber(id, this);
 		SuccessVO successVO = new SuccessVO();
-		responseList.add(successVO.toJson());
+		try{
+			out.writeUTF(successVO.toJson());
+	
+			while(true){
+				out.writeUTF("hello");
+				out.writeUTF("goodbye");
+				break;
+			}
+		}
+		catch (IOException e){
+			e.printStackTrace();
+		}
 		return responseList;
 		
 	}

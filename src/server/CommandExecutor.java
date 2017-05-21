@@ -1,6 +1,10 @@
 package server;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.util.List;
+
+import org.apache.commons.io.output.ThresholdingOutputStream;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -26,12 +30,21 @@ import netscape.javascript.JSObject;
 public class CommandExecutor {
 	static private CommandExecutor mCommandExecutor;
 	private DataObject data;
-
+	private DataInputStream in;
+	private DataOutputStream out;
+	
+	
 	private CommandExecutor() {
 		data = new DataObject();
 		data.setSecret(Server.parameters.get(Commands.secret));
 	}
+	
+	public void setInputOutputStream(DataInputStream in,DataOutputStream out){
+		this.in = in;
+		this.out = out;
+	}
 
+	
 	static CommandExecutor init() {
 		if (mCommandExecutor == null) {
 			mCommandExecutor = new CommandExecutor();
@@ -59,6 +72,7 @@ public class CommandExecutor {
 
 		}else if (command.contains("subscribe")) {
 			requestVO = new Gson().fromJson(requestData, SubscribeVO.class);
+			((SubscribeVO) requestVO).setInputOutputStream(in,out);
 		}else if (command.contains("unsubscribe")) {
 			requestVO = new Gson().fromJson(requestData, UnsubscribeVO.class);
 
