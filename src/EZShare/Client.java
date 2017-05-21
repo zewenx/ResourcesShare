@@ -412,84 +412,8 @@ public class Client {
 		// InetSocketAddress address = new
 		// InetSocketAddress("sunrise.cis.unimelb.edu.au", 3780);
 		InetSocketAddress address = null;
-		if (defaultHost) {
-			connectionThread = new Thread(new ConnectionThread(vo, debug));
-			
-		} else {
 			connectionThread = new Thread(new ConnectionThread(parameters.get(Commands.host), Integer.parseInt(parameters.get(Commands.port)),vo, debug));//parameters.get(Commands.host), Integer.parseInt(parameters.get(Commands.port)
-		}
 		connectionThread.start();
 	}
 	
-	List request(RequestVO vo) {
-		Socket socket = null;
-		List responseList = new ArrayList<String>();
-		try {
-
-			// InetSocketAddress address = new
-			// InetSocketAddress("sunrise.cis.unimelb.edu.au", 3780);
-			InetSocketAddress address = null;
-			if (defaultHost) {
-				address = new InetSocketAddress("127.0.0.1", 8888);
-			} else {
-				address = new InetSocketAddress(parameters.get(Commands.host), Integer.parseInt(parameters.get(Commands.port)));
-			}
-			socket = new Socket();
-			socket.setSoTimeout(600000);
-			socket.connect(address);
-			DataInputStream in = new DataInputStream(socket.getInputStream());
-			DataOutputStream out = new DataOutputStream(socket.getOutputStream());
-			LogUtils.initLogger(logtag).log(" SEND: " + vo.toJson(), debug);
-			out.writeUTF(vo.toJson());
-			out.flush();
-
-			l: while (true) {
-
-				String response = "";
-				try {
-					response = in.readUTF();
-				} catch (Exception e) {
-					e.printStackTrace();
-					break l;
-				}
-				if (response.length() > 0) {
-					responseList.add(response);
-				}
-				if (response.length() > 0)
-					switch (vo.getCommand().toLowerCase()) {
-					case "publish":
-					case "remove":
-					case "exchange":
-					case "share":
-						if (response.contains("response")) {
-							break l;
-						}
-						break;
-					case "query":
-					case "fetch":
-						if (response.contains("resultSize") || response.contains("error")) {
-							break l;
-						}
-						break;					
-					}
-
-			}
-			for (Object str : responseList) {
-				if (str instanceof String) {
-					LogUtils.initLogger(logtag).log(" RECEIVED: " + (String) str, debug);
-				}
-			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} finally {
-			try {
-				socket.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		return responseList;
-	}
 }

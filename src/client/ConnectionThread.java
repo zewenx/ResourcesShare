@@ -24,12 +24,6 @@ public class ConnectionThread implements Runnable{
 		this.debug = debug;
 	}
 	
-	public ConnectionThread(RequestVO vo,boolean debug){
-		address = new InetSocketAddress("127.0.0.1", 8888);
-		this.vo = vo;
-		this.debug = debug;
-	}
-	
 	public void run() {
 		try{
 			socket = new Socket();
