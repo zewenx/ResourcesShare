@@ -24,7 +24,12 @@ public class Commands {
 	public static String tags ="tags";
 	public static String uri ="uri";
 	public static String servers ="servers";
+	public static String subscribe ="subscribe";
+	public static String unsubscribe ="unsubscribe";
+	public static String id = "id";
+
 	
 	public static String secure = "secure";
 	public static String sport = "sport";
+
 }

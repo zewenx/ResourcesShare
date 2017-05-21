@@ -9,6 +9,7 @@ import java.util.Map;
 import EZShare.Server;
 import VO.ResourceVO;
 import VO.ServerVO;
+import VO.SubscribeVO;
 
 public class DataObject {
 
@@ -18,12 +19,30 @@ public class DataObject {
 	// key = Channel + URI value = Resource
 	Map<String, ResourceVO> dataList1 = new HashMap<String, ResourceVO>();
 
+	// Subscriber List
+	Map<String, SubscribeVO> subList = new HashMap<String, SubscribeVO>();
+	
+
 	// ServerList
 	List<ServerVO> serverList = new ArrayList<ServerVO>();
 	
 	// secure severlist
 	List<ServerVO> secureServerList = new ArrayList<ServerVO>();
 
+	// add to sub hash map
+	public void addSubscriber(String id, SubscribeVO data){
+		subList.put(id, data);
+	}
+	
+	// remove sub from hash map
+	public void removeSubscriber(String id){
+		subList.remove(id);
+	}
+	
+	// checks if key exists in subscriber hash map
+	public boolean isSubIdinUse(String id){
+		return subList.containsKey(id);
+	}
 	// secret only for share command
 	private String secret = "";
 	

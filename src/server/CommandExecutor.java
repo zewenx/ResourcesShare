@@ -19,6 +19,8 @@ import VO.RequestVO;
 import VO.SecureExchangeVO;
 import VO.SecureQueryVO;
 import VO.ShareVO;
+import VO.SubscribeVO;
+import VO.UnsubscribeVO;
 import netscape.javascript.JSObject;
 
 public class CommandExecutor {
@@ -54,6 +56,12 @@ public class CommandExecutor {
 			requestVO = new Gson().fromJson(requestData, RemoveVO.class);
 		} else if (command.contains("share")) {
 			requestVO = new Gson().fromJson(requestData, ShareVO.class);
+
+		}else if (command.contains("subscribe")) {
+			requestVO = new Gson().fromJson(requestData, SubscribeVO.class);
+		}else if (command.contains("unsubscribe")) {
+			requestVO = new Gson().fromJson(requestData, UnsubscribeVO.class);
+
 		} else if (command.contains("query")) {
 			if (isSecureSocket) {
 				requestVO = new Gson().fromJson(requestData, SecureQueryVO.class);

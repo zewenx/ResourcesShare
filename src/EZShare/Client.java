@@ -39,6 +39,8 @@ import VO.ShareVO;
 import VO.PublishVO;
 import VO.QueryVO;
 import VO.SpecialResourceVO;
+import VO.SubscribeVO;
+import client.ConnectionThread;
 import client.Network;
 import client.OptionInit;
 import javafx.scene.effect.FloatMap;
@@ -58,6 +60,11 @@ public class Client {
 
 	public Client() {
 
+
+//		options.addOption(Commands.subscribe, false, "subscribe to query responses of the server");
+//		options.addOption(Commands.unsubscribe, true, "unsubscribe from query responses of the server");
+
+//		options.addOption(Commands.id, false, "subscription id");
 		init();
 	}
 
@@ -75,12 +82,14 @@ public class Client {
 	public void start(String[] args) {
 		CommandLineParser parser = new DefaultParser();
 		try {
+			
 			CommandLine commands = parser.parse(options, args);
 
 			if (commands.hasOption(Commands.help)) {
 				new HelpFormatter().printHelp("java -cp ezshare.jar EZShare.Client", options);
 				return;
 			}
+
 
 			if (commands.hasOption(Commands.secure)) {
 				this.isSecureConnection = true;
@@ -103,6 +112,10 @@ public class Client {
 
 			if (commands.hasOption(Commands.publish)) {
 				publishCommand(commands);
+			} else if(commands.hasOption(Commands.subscribe)) {
+				subscribeCommand(commands);
+			} else if(commands.hasOption(Commands.unsubscribe)) {
+				unsubscribeCommand(commands);
 			} else if (commands.hasOption(Commands.exchange)) {
 				exchangeCommand(commands);
 			} else if (commands.hasOption(Commands.fetch)) {
@@ -123,6 +136,41 @@ public class Client {
 		}
 	}
 
+	private void subscribeCommand(CommandLine commands){
+		SubscribeVO vo = new SubscribeVO();
+		System.out.println("here");
+		vo.setCommand("SUBSCRIBE");
+		vo.setID(commands.getOptionValue(Commands.id));
+		
+		// sets values for data resources
+				ResourceVO resourceVO = new ResourceVO();
+				resourceVO.setChannel(commands.getOptionValue(Commands.channel));
+				resourceVO.setDescription(commands.getOptionValue(Commands.description));
+				resourceVO.setName(commands.getOptionValue(Commands.name));
+				resourceVO.setOwner(commands.getOptionValue(Commands.owner));
+				String tags = commands.getOptionValue(Commands.tags);
+				ArrayList<String> taglist = new ArrayList<String>();
+				if (tags != null & tags != "") {
+					for (String string : tags.split(",")) {
+						taglist.add(string);
+					}
+				}
+				resourceVO.setTags(taglist);
+				resourceVO.setUri(commands.getOptionValue(Commands.uri));
+				resourceVO.setEzserver(null);
+				vo.setResource(resourceVO);
+				
+				//setup connection
+				commandLog("subscribing to ");
+				subscribe(vo);
+
+				
+	}
+	
+	private void unsubscribeCommand(CommandLine commands){
+		
+	}
+	
 	private void publishCommand(CommandLine commands) {
 		PublishVO vo = new PublishVO();
 		vo.setCommand("PUBLISH");
@@ -358,5 +406,90 @@ public class Client {
 				.log(commandInfo + parameters.get(Commands.host) + ":" + parameters.get(Commands.port), debug);
 	}
 
+	//subscribe to the server
+	void subscribe(RequestVO vo){
+		Thread connectionThread = null;
+		// InetSocketAddress address = new
+		// InetSocketAddress("sunrise.cis.unimelb.edu.au", 3780);
+		InetSocketAddress address = null;
+		if (defaultHost) {
+			connectionThread = new Thread(new ConnectionThread(vo, debug));
+			
+		} else {
+			connectionThread = new Thread(new ConnectionThread(parameters.get(Commands.host), Integer.parseInt(parameters.get(Commands.port)),vo, debug));//parameters.get(Commands.host), Integer.parseInt(parameters.get(Commands.port)
+		}
+		connectionThread.start();
+	}
 	
+	List request(RequestVO vo) {
+		Socket socket = null;
+		List responseList = new ArrayList<String>();
+		try {
+
+			// InetSocketAddress address = new
+			// InetSocketAddress("sunrise.cis.unimelb.edu.au", 3780);
+			InetSocketAddress address = null;
+			if (defaultHost) {
+				address = new InetSocketAddress("127.0.0.1", 8888);
+			} else {
+				address = new InetSocketAddress(parameters.get(Commands.host), Integer.parseInt(parameters.get(Commands.port)));
+			}
+			socket = new Socket();
+			socket.setSoTimeout(600000);
+			socket.connect(address);
+			DataInputStream in = new DataInputStream(socket.getInputStream());
+			DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+			LogUtils.initLogger(logtag).log(" SEND: " + vo.toJson(), debug);
+			out.writeUTF(vo.toJson());
+			out.flush();
+
+			l: while (true) {
+
+				String response = "";
+				try {
+					response = in.readUTF();
+				} catch (Exception e) {
+					e.printStackTrace();
+					break l;
+				}
+				if (response.length() > 0) {
+					responseList.add(response);
+				}
+				if (response.length() > 0)
+					switch (vo.getCommand().toLowerCase()) {
+					case "publish":
+					case "remove":
+					case "exchange":
+					case "share":
+						if (response.contains("response")) {
+							break l;
+						}
+						break;
+					case "query":
+					case "fetch":
+						if (response.contains("resultSize") || response.contains("error")) {
+							break l;
+						}
+						break;					
+					}
+
+			}
+			for (Object str : responseList) {
+				if (str instanceof String) {
+					LogUtils.initLogger(logtag).log(" RECEIVED: " + (String) str, debug);
+				}
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			try {
+				socket.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return responseList;
+	}
 }

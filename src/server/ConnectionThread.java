@@ -10,6 +10,7 @@ import javax.net.ssl.SSLSocket;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.sun.corba.se.spi.ior.Writeable;
 
 import EZShare.Server;
 import VO.RequestVO;
@@ -33,7 +34,7 @@ public class ConnectionThread implements Runnable {
 		}
 
 	}
-
+	
 	@Override
 	public void run() {
 		try {
