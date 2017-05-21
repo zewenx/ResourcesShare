@@ -24,6 +24,7 @@ public class PublishVO extends RequestVO{
 
 	@Override
 	public List<String> execute(DataObject data) {
+		System.out.println("65432");
 		
 		List<String> responseList = new ArrayList<String>();
 		// Error Handling
@@ -64,6 +65,8 @@ public class PublishVO extends RequestVO{
 		
 		//update hash-map and return a success message
 		data.saveResource(getResource());
+		System.out.println("12345");
+		SubscriptionHandler.checkResource(this.resource);
 		SuccessVO successVO = new SuccessVO();
 		responseList.add(successVO.toJson());
 		

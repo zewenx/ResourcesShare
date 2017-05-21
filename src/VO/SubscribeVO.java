@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.sun.xml.internal.ws.api.config.management.policy.ManagedServiceAssertion.NestedParameters;
+
 import server.DataObject;
 
 public class SubscribeVO extends RequestVO{
@@ -14,6 +16,7 @@ public class SubscribeVO extends RequestVO{
 	private String id = "";
 	private DataInputStream in;
 	private DataOutputStream out;
+	private int resourceCount = 0;
 	
 	public boolean isRelay() {
 		return relay;
@@ -67,10 +70,10 @@ public class SubscribeVO extends RequestVO{
 		try{
 			out.writeUTF(successVO.toJson());
 	
+			//need to keep thread open here and wait for responses
+			
 			while(true){
-				out.writeUTF("hello");
-				out.writeUTF("goodbye");
-				break;
+				
 			}
 		}
 		catch (IOException e){
@@ -78,5 +81,16 @@ public class SubscribeVO extends RequestVO{
 		}
 		return responseList;
 		
+	}
+	
+	public void sendResource(ResourceVO vo){
+		resourceCount++;
+		try{
+			System.out.println("gfdsifjdslfk");
+			out.writeUTF(vo.toJson());
+		}
+		catch(IOException e){
+			e.printStackTrace();
+		}
 	}
 }

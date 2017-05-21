@@ -20,7 +20,7 @@ public class DataObject {
 	Map<String, ResourceVO> dataList1 = new HashMap<String, ResourceVO>();
 
 	// Subscriber List
-	Map<String, SubscribeVO> subList = new HashMap<String, SubscribeVO>();
+	static Map<String, SubscribeVO> subList = new HashMap<String, SubscribeVO>();
 	
 
 	// ServerList
@@ -29,6 +29,9 @@ public class DataObject {
 	// secure severlist
 	List<ServerVO> secureServerList = new ArrayList<ServerVO>();
 
+	public static Map<String, SubscribeVO> getSublist(){
+		return subList;
+	}
 	// add to sub hash map
 	public void addSubscriber(String id, SubscribeVO data){
 		subList.put(id, data);

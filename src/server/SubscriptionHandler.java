@@ -1,6 +1,7 @@
 package server;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.omg.CORBA.PUBLIC_MEMBER;
@@ -10,7 +11,7 @@ import VO.SubscribeVO;
 
 
 public class SubscriptionHandler {
-	static HashMap <String,SubscribeVO> subMap = new HashMap<String,SubscribeVO>();
+	private static Map<String, SubscribeVO> subMap = DataObject.getSublist();
 	public static void checkResource(ResourceVO resourceTemplate)
 	{
 		for(SubscribeVO vo : subMap.values())
@@ -54,7 +55,7 @@ public class SubscriptionHandler {
 				}
 			}
 			
-			//send response to client!!
+			//vo.sendResource(resourceTemplate);
 			
 			
 		}
