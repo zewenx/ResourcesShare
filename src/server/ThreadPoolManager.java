@@ -6,7 +6,7 @@ import java.util.concurrent.Executors;
 public class ThreadPoolManager {
 	ExecutorService fixedThreadPool;
 	int count = 0;
-	int cores = 5;
+	int cores = 10;
 
 	private static ThreadPoolManager mPoolManager;
 

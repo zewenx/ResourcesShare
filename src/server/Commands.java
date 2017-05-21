@@ -25,4 +25,6 @@ public class Commands {
 	public static String uri ="uri";
 	public static String servers ="servers";
 	
+	public static String secure = "secure";
+	public static String sport = "sport";
 }

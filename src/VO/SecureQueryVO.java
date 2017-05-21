@@ -11,31 +11,16 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.SSLSocketFactory;
+
 import com.google.gson.Gson;
 
 import server.Commands;
 import server.DataObject;
 import server.LogUtils;
 
-public class QueryVO extends RequestVO {
-	protected boolean relay;
-	protected ResourceVO resourceTemplate;
-
-	public boolean isRelay() {
-		return relay;
-	}
-
-	public void setRelay(boolean relay) {
-		this.relay = relay;
-	}
-
-	public ResourceVO getResourceTemplate() {
-		return resourceTemplate;
-	}
-
-	public void setResourceTemplate(ResourceVO resourceTemplate) {
-		this.resourceTemplate = resourceTemplate;
-	}
+public class SecureQueryVO extends QueryVO {
 
 	@Override
 	public List<String> execute(DataObject data) {
@@ -108,8 +93,8 @@ public class QueryVO extends RequestVO {
 		for (ResourceVO resourceVO : resultList) {
 			responseList.add(resourceVO.toJson());
 		}
-		if(data.getServerList().size()>0&& relay==true){
-			for(ServerVO serverVO : data.getServerList()){
+		if(data.getSecureServerList().size()>0&& relay==true){
+			for(ServerVO serverVO : data.getSecureServerList()){
 				this.setRelay(false);
 				List tempList = request(this, serverVO.getHostname(), serverVO.getPort());
 				
@@ -117,25 +102,24 @@ public class QueryVO extends RequestVO {
 			}
 		}
 		
-		
 		responseList.add(new ResultSizeVO().setResultSize("" +(responseList.size()-1)).toJson());
 		return responseList;
 	}
 	
 	List request(RequestVO vo,String host,int port) {
-		Socket socket = null;
 		List responseList = new ArrayList<String>();
 		DataInputStream in = null;
 		DataOutputStream out=null;
+		SSLSocket sslsocket = null;
 		try {
 
 			// InetSocketAddress address = new
 			// InetSocketAddress("sunrise.cis.unimelb.edu.au", 3780);
-			InetSocketAddress address = new InetSocketAddress(host, port);
-			socket = new Socket();
-			socket.connect(address);
-			 in = new DataInputStream(socket.getInputStream());
-			 out = new DataOutputStream(socket.getOutputStream());
+			SSLSocketFactory sslsocketfactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
+			sslsocket = (SSLSocket) sslsocketfactory.createSocket(host,port);
+
+			 in = new DataInputStream(sslsocket.getInputStream());
+			 out = new DataOutputStream(sslsocket.getOutputStream());
 //			LogUtils.initLogger("Server.log").log(" SEND: " + vo.toJson(), false);
 			out.writeUTF(vo.toJson());
 			out.flush();
@@ -188,9 +172,9 @@ l:			while (true) {
 					
 					out.close();
 				}
-				if (socket != null) {
+				if (sslsocket != null) {
 					
-					socket.close();
+					sslsocket.close();
 				}
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
