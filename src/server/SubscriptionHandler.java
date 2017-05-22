@@ -55,14 +55,26 @@ public class SubscriptionHandler {
 				}
 			}
 			
-			//vo.sendResource(resourceTemplate);
+			vo.sendResource(resourceTemplate);
 			
 			
 		}
-		
+
 	}
-	public void addSubscription(SubscribeVO sub)
+	public static void addSubscription(SubscribeVO sub)
 	{
 		subMap.put(sub.getId(), sub);
 	}
+	
+	
+	public static boolean unsubscribe(String id){
+		boolean exists = subMap.containsKey(id);
+		if(exists)
+		{
+			(subMap.get(id)).setDone();
+			subMap.remove(id);
+		}
+		return exists;
+	}
+	
 }
