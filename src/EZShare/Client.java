@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.logging.Logger;
 
 import javax.print.attribute.standard.PrinterMessageFromOperator;
@@ -47,6 +48,7 @@ import client.SecureNetwork;
 import javafx.scene.effect.FloatMap;
 import server.Commands;
 import server.LogUtils;
+import server.SSLLoader;
 import sun.management.counter.perf.PerfInstrumentation;
 import sun.util.logging.resources.logging;
 
@@ -89,12 +91,7 @@ public class Client {
 
 			if (commands.hasOption(Commands.secure)) {
 				this.isSecureConnection = true;
-				System.setProperty("javax.net.ssl.keyStore","files/client/pkclient.keystore");
-				System.setProperty("javax.net.ssl.keyStorePassword","111111");
-				System.setProperty("javax.net.ssl.trustStore", "files/client/tclient");  
-		        System.setProperty("javax.net.ssl.trustStorePassword", "111111"); 
-//		        System.setProperty("javax.net.debug","all");
-				
+				SSLLoader.load("client/pkclient.keystore","client/tclient");
 			}
 
 			if (isSecureConnection) {
