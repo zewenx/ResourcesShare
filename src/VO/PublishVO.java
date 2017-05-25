@@ -69,8 +69,6 @@ public class PublishVO extends RequestVO{
 		SuccessVO successVO = new SuccessVO();
 		responseList.add(successVO.toJson());
 		
-		//check for subscriptions to notify
-		SubscriptionHandler.checkResource(resource);
 		return responseList;
 	}
 	

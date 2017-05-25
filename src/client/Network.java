@@ -81,6 +81,10 @@ public class Network {
 						if(response.contains("response")){
 							break l;
 						}
+					case "unsubscribe":
+						if(response.contains("response")){
+							break l;
+						}
 					}
 
 			}

@@ -52,6 +52,7 @@ public class SubscribeVO extends RequestVO{
 	}
 	@Override
 	synchronized public List<String> execute(DataObject data) {
+		buffer = new ArrayList<String>();
 		List<String> responseList = new ArrayList<String>();
 		//Error Handling
 		if(this.id.equals("")){
@@ -76,7 +77,7 @@ public class SubscribeVO extends RequestVO{
 			//need to keep thread open here and wait for responses
 			while(!done){
 				try {
-					while(buffer != null){
+					while(buffer.size()>0 && buffer != null){
 						out.writeUTF(buffer.get(0));
 						buffer.remove(0);
 					}
@@ -96,12 +97,13 @@ public class SubscribeVO extends RequestVO{
 		
 	}
 	
-	public void sendResource(ResourceVO vo){
+	synchronized public void sendResource(ResourceVO vo){
+		System.out.println();
 		resourceCount++;
 		buffer.add(vo.toJson());
 		notifyAll();
 	}
-	public void setDone(){
+	synchronized public void setDone(){
 		done = true;
 		notifyAll();
 	}
