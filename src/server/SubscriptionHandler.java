@@ -81,7 +81,7 @@ public class SubscriptionHandler {
 				}
 			} else {
 				for (ServerVO vo : data.getServerList()) {
-					connectionThread = new Thread(new ConnectionThread(vo.getHostname(),vo.getPort(), sub, EZShare.Server.debug));
+					connectionThread = new Thread(new SubscriptionRelayThread(vo, sub, EZShare.Server.debug));
 					connectionThread.start();
 				}
 			}
