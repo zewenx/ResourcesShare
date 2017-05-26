@@ -39,7 +39,7 @@ public class SubscriptionHandler {
 					continue;
 				}
 			}
-			if (vo.getResourceTemplate().getTags() != null || vo.getResourceTemplate().getTags().size() > 0) {
+			if (vo.getResourceTemplate().getTags() != null && vo.getResourceTemplate().getTags().size() > 0) {
 				Set<String> tagResource = new HashSet<String>();
 				Set<String> tagTemp = new HashSet<String>();
 				tagResource.addAll(vo.getResourceTemplate().getTags());
