@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.List;
 
+import javax.net.ssl.SSLSocket;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -46,7 +48,8 @@ public class ConnectionThread implements Runnable {
 			LogUtils.initLogger(Server.logtag).log(" RECEIVED: "+data, Server.debug);
 			CommandExecutor commandExecutor = CommandExecutor.init();
 			commandExecutor.setInputOutputStream(in, out);
-			List responseData = null;
+
+	/*		List responseData = null;
 			if(data.toLowerCase().contains("unsubscribe")){
 				synchronized (this) {
 					responseData = commandExecutor.submit(data, false);
@@ -60,7 +63,10 @@ public class ConnectionThread implements Runnable {
 					responseData = commandExecutor.submit(data, false); 
 				}
 			//TODO SECURITY STUFF
-			}
+			}*/
+
+			List responseData = commandExecutor.submit(data, mSocket instanceof SSLSocket); //TODO SECURITY STUFF
+			
 			for (Object o : responseData) {
 				if (o instanceof String) {
 					out.writeUTF((String) o);

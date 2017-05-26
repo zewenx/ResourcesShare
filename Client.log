@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE log SYSTEM "logger.dtd">
+<log>
+<record>
+  <date>2017-05-24T13:16:49</date>
+  <millis>1495595809077</millis>
+  <sequence>0</sequence>
+  <logger>Client.log</logger>
+  <level>INFO</level>
+  <class>server.LogUtils</class>
+  <method>log</method>
+  <thread>1</thread>
+  <message>setting debug on</message>
+</record>
+<record>
+  <date>2017-05-24T13:16:49</date>
+  <millis>1495595809105</millis>
+  <sequence>1</sequence>
+  <logger>Client.log</logger>
+  <level>INFO</level>
+  <class>server.LogUtils</class>
+  <method>log</method>
+  <thread>1</thread>
+  <message>Querying to 127.0.0.1:null</message>
+</record>
+<record>
+  <date>2017-05-24T13:16:49</date>
+  <millis>1495595809452</millis>
+  <sequence>2</sequence>
+  <logger>Client.log</logger>
+  <level>INFO</level>
+  <class>server.LogUtils</class>
+  <method>log</method>
+  <thread>1</thread>
+  <message> SEND: {"relay":true,"resourceTemplate":{"name":"","tags":[],"description":"","uri":"","channel":"","owner":""},"command":"QUERY"}</message>
+</record>
+</log>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE log SYSTEM "logger.dtd">
+<log>
+<record>
+  <date>2017-05-24T13:17:28</date>
+  <millis>1495595848364</millis>
+  <sequence>0</sequence>
+  <logger>Client.log</logger>
+  <level>INFO</level>
+  <class>server.LogUtils</class>
+  <method>log</method>
+  <thread>1</thread>
+  <message>setting debug on</message>
+</record>
+<record>
+  <date>2017-05-24T13:17:28</date>
+  <millis>1495595848385</millis>
+  <sequence>1</sequence>
+  <logger>Client.log</logger>
+  <level>INFO</level>
+  <class>server.LogUtils</class>
+  <method>log</method>
+  <thread>1</thread>
+  <message>Querying to 127.0.0.1:null</message>
+</record>
+<record>
+  <date>2017-05-24T13:17:28</date>
+  <millis>1495595848660</millis>
+  <sequence>2</sequence>
+  <logger>Client.log</logger>
+  <level>INFO</level>
+  <class>server.LogUtils</class>
+  <method>log</method>
+  <thread>1</thread>
+  <message> SEND: {"relay":true,"resourceTemplate":{"name":"","tags":[],"description":"","uri":"","channel":"","owner":""},"command":"QUERY"}</message>
+</record>
+<record>
+  <date>2017-05-24T13:17:36</date>
+  <millis>1495595856211</millis>
+  <sequence>3</sequence>
+  <logger>Client.log</logger>
+  <level>INFO</level>
+  <class>server.LogUtils</class>
+  <method>log</method>
+  <thread>1</thread>
+  <message> RECEIVED: {"response":"success"}</message>
+</record>
+<record>
+  <date>2017-05-24T13:17:36</date>
+  <millis>1495595856212</millis>
+  <sequence>4</sequence>
+  <logger>Client.log</logger>
+  <level>INFO</level>
+  <class>server.LogUtils</class>
+  <method>log</method>
+  <thread>1</thread>
+  <message> RECEIVED: {"resultSize":"0"}</message>
+</record>
+</log>

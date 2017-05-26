@@ -8,7 +8,7 @@ import java.util.Map;
 
 public class Network implements Runnable{
 	HashMap<String, Long> clientIP = new HashMap<>();
-	public static Map<String, String> parameters;
+	public Map<String, String> parameters;
 	String logtag="";
 	
 	

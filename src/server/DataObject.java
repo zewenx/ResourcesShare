@@ -28,6 +28,17 @@ public class DataObject {
 	
 	// secure severlist
 	List<ServerVO> secureServerList = new ArrayList<ServerVO>();
+	
+	//is the request a secure connection
+	boolean isSecureConnection = false;
+
+	public boolean isSecureConnection() {
+		return isSecureConnection;
+	}
+
+	public void setSecureConnection(boolean isSecureConnection) {
+		this.isSecureConnection = isSecureConnection;
+	}
 
 	public static Map<String, SubscribeVO> getSublist(){
 		return subList;
@@ -89,7 +100,7 @@ public class DataObject {
 	 * @param vo ResourceVO to be saved into the map
 	 */
 	public void saveResource(ResourceVO vo) {
-		vo.setEzserver(Server.parameters.get(Commands.advertisedhostname) + ":" + Server.parameters.get(Commands.port));
+		vo.setEzserver(Server.parameters.get(Commands.advertisedhostname) + ":" + (isSecureConnection?Server.parameters.get(Commands.sport):Server.parameters.get(Commands.port)));
 
 		dataList0.put(vo.getOwner() + vo.getChannel() + vo.getUri(), vo);
 		dataList1.put(vo.getChannel() + vo.getUri(), vo);

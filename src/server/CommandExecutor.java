@@ -56,7 +56,9 @@ public class CommandExecutor {
 		return data;
 	}
 
-	 List<String> submit(String requestData, boolean isSecureSocket) {
+
+	synchronized List<String> submit(String requestData, boolean isSecureSocket) {
+		data.setSecureConnection(isSecureSocket);
 		JsonParser parser = new JsonParser();
 		JsonObject jsonObject = parser.parse(requestData).getAsJsonObject();
 

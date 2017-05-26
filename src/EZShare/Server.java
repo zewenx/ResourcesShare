@@ -25,6 +25,7 @@ import server.ConnectionThread;
 import server.InteractionThread;
 import server.LogUtils;
 import server.Network;
+import server.SSLLoader;
 import server.SecureNetwork;
 import server.ThreadPoolManager;
 
@@ -41,7 +42,7 @@ public class Server {
 
 	public Server() {
 		this.options = new Options();
-		parameters.put(Commands.port, "8888");
+		parameters.put(Commands.port, "3780");
 		parameters.put(Commands.advertisedhostname, "FrancisServer");
 		parameters.put(Commands.exchangeinterval, "600000");
 		parameters.put(Commands.secret, "123443211234");
@@ -65,6 +66,15 @@ public class Server {
 	}
 
 	public void start(String[] args) {
+		
+		//Password to access the private key from the keystore file
+		System.setProperty("javax.net.debug","all");
+		SSLLoader.load("server/pkserver.keystore","server/tserver");
+//		System.setProperty("javax.net.ssl.keyStore","files/server/pkserver.keystore");
+//		System.setProperty("javax.net.ssl.keyStorePassword","111111");
+//		System.setProperty("javax.net.ssl.trustStore", "files/server/tserver");  
+//        System.setProperty("javax.net.ssl.trustStorePassword", "111111");
+		
 		CommandLineParser parser = new DefaultParser();
 		try {
 			CommandLine commands = parser.parse(options, args);

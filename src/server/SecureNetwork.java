@@ -15,7 +15,7 @@ import javax.net.ssl.SSLSocket;
 
 public class SecureNetwork implements Runnable {
 	HashMap<String, Long> clientIP = new HashMap<>();
-	public static Map<String, String> parameters;
+	public Map<String, String> parameters;
 	String logtag = "";
 
 	public SecureNetwork(Map<String, String> parameters, String logtag) {
@@ -33,9 +33,9 @@ public class SecureNetwork implements Runnable {
 					.createServerSocket(Integer.parseInt(parameters.get(Commands.sport)));
 
 			// TODO
-			new Thread(new InteractionThread(parameters.get(Commands.exchangeinterval),
-					parameters.get(Commands.debug).equals("Y"))).start();
-			// Accept client connection
+//			new Thread(new InteractionThread(parameters.get(Commands.exchangeinterval),
+//					parameters.get(Commands.debug).equals("Y"))).start();
+//			// Accept client connection
 			while (true) {
 				SSLSocket sslsocket = (SSLSocket) sslserversocket.accept();
 
