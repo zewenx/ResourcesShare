@@ -24,7 +24,7 @@ public class DataObject {
 	
 
 	// ServerList
-	static List<ServerVO> serverList = new ArrayList<ServerVO>();
+	List<ServerVO> serverList = new ArrayList<ServerVO>();
 	
 	// secure severlist
 	List<ServerVO> secureServerList = new ArrayList<ServerVO>();
@@ -178,7 +178,7 @@ public class DataObject {
 	 * gets server list 
 	 * @return the server list
 	 */
-	static public List<ServerVO> getServerList (){
+	public List<ServerVO> getServerList (){
 		return serverList;
 	}
 	

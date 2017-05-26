@@ -77,10 +77,12 @@ public class SubscriptionHandler {
 			if (data.isSecureConnection) {
 				for (ServerVO vo : data.getSecureServerList()) {
 					connectionThread = new Thread(new SecureConnectionThread(vo.getHostname(),vo.getPort(), sub, EZShare.Server.debug));
+					connectionThread.start();
 				}
 			} else {
 				for (ServerVO vo : data.getServerList()) {
 					connectionThread = new Thread(new ConnectionThread(vo.getHostname(),vo.getPort(), sub, EZShare.Server.debug));
+					connectionThread.start();
 				}
 			}
 			relaySubMap.put(sub.getId(), connectionThread);
