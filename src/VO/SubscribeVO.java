@@ -6,14 +6,20 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.sun.xml.internal.ws.api.config.management.policy.ManagedServiceAssertion.NestedParameters;
+
 import server.DataObject;
+import server.SubscriptionHandler;
 
 public class SubscribeVO extends RequestVO{
-	boolean relay;
+	boolean relay = true;
 	private ResourceVO resourceTemplate;
 	private String id = "";
 	private DataInputStream in;
 	private DataOutputStream out;
+	private int resourceCount = 0;
+	private List<String> buffer = null;
+	private boolean done = false;
 	
 	public boolean isRelay() {
 		return relay;
@@ -45,7 +51,8 @@ public class SubscribeVO extends RequestVO{
 		this.resourceTemplate = resourceTemplate;
 	}
 	@Override
-	public List<String> execute(DataObject data) {
+	synchronized public List<String> execute(DataObject data) {
+		buffer = new ArrayList<String>();
 		List<String> responseList = new ArrayList<String>();
 		//Error Handling
 		if(this.id.equals("")){
@@ -62,21 +69,46 @@ public class SubscribeVO extends RequestVO{
 		}
 		
 		//Process
-		data.addSubscriber(id, this);
+		SubscriptionHandler.addSubscription(this);
+		
 		SuccessVO successVO = new SuccessVO();
 		try{
 			out.writeUTF(successVO.toJson());
-	
-			while(true){
-				out.writeUTF("hello");
-				out.writeUTF("goodbye");
-				break;
+			//relay to other servers
+			if(relay == true){
+				
+			}
+			//need to keep thread open here and wait for responses
+			while(!done){
+				try {
+					while(buffer.size()>0 && buffer != null){
+						out.writeUTF(buffer.get(0));
+						buffer.remove(0);
+					}
+					wait();
+					
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				
 			}
 		}
 		catch (IOException e){
 			e.printStackTrace();
 		}
+		responseList.add(new ResultSizeVO().setResultSize("" +(resourceCount)).toJson());
 		return responseList;
 		
+	}
+	
+	synchronized public void sendResource(ResourceVO vo){
+		System.out.println();
+		resourceCount++;
+		buffer.add(vo.toJson());
+		notifyAll();
+	}
+	synchronized public void setDone(){
+		done = true;
+		notifyAll();
 	}
 }

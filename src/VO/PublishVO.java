@@ -23,8 +23,8 @@ public class PublishVO extends RequestVO{
 	}
 
 	@Override
-	public List<String> execute(DataObject data) {
-		
+	public List<String> execute(DataObject data) {	
+		System.out.println("publish1");
 		List<String> responseList = new ArrayList<String>();
 		// Error Handling
 		//if there is no resource, return error.
@@ -64,11 +64,11 @@ public class PublishVO extends RequestVO{
 		
 		//update hash-map and return a success message
 		data.saveResource(getResource());
+		System.out.println("publish2");
+		SubscriptionHandler.checkResource(this.resource);
 		SuccessVO successVO = new SuccessVO();
 		responseList.add(successVO.toJson());
 		
-		//check for subscriptions to notify
-		SubscriptionHandler.checkResource(resource);
 		return responseList;
 	}
 	

@@ -34,6 +34,7 @@ public class Network implements Runnable{
 					}
 				}
 				clientIP.put(ip, currentTime);
+
 				
 				ConnectionThread connectionThread = new ConnectionThread(clientSocket);
 				ThreadPoolManager.init().submitThread(connectionThread);

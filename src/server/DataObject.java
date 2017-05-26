@@ -20,11 +20,11 @@ public class DataObject {
 	Map<String, ResourceVO> dataList1 = new HashMap<String, ResourceVO>();
 
 	// Subscriber List
-	Map<String, SubscribeVO> subList = new HashMap<String, SubscribeVO>();
+	static Map<String, SubscribeVO> subList = new HashMap<String, SubscribeVO>();
 	
 
 	// ServerList
-	List<ServerVO> serverList = new ArrayList<ServerVO>();
+	static List<ServerVO> serverList = new ArrayList<ServerVO>();
 	
 	// secure severlist
 	List<ServerVO> secureServerList = new ArrayList<ServerVO>();
@@ -40,6 +40,10 @@ public class DataObject {
 		this.isSecureConnection = isSecureConnection;
 	}
 
+	public static Map<String, SubscribeVO> getSublist(){
+		return subList;
+	}
+	
 	// add to sub hash map
 	public void addSubscriber(String id, SubscribeVO data){
 		subList.put(id, data);
@@ -174,7 +178,7 @@ public class DataObject {
 	 * gets server list 
 	 * @return the server list
 	 */
-	public List<ServerVO> getServerList (){
+	static public List<ServerVO> getServerList (){
 		return serverList;
 	}
 	

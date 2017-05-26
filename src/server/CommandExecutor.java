@@ -56,9 +56,9 @@ public class CommandExecutor {
 		return data;
 	}
 
+
 	synchronized List<String> submit(String requestData, boolean isSecureSocket) {
 		data.setSecureConnection(isSecureSocket);
-		
 		JsonParser parser = new JsonParser();
 		JsonObject jsonObject = parser.parse(requestData).getAsJsonObject();
 
@@ -71,13 +71,11 @@ public class CommandExecutor {
 			requestVO = new Gson().fromJson(requestData, RemoveVO.class);
 		} else if (command.contains("share")) {
 			requestVO = new Gson().fromJson(requestData, ShareVO.class);
-
+		}else if (command.contains("unsubscribe")) {
+			requestVO = new Gson().fromJson(requestData, UnsubscribeVO.class);
 		}else if (command.contains("subscribe")) {
 			requestVO = new Gson().fromJson(requestData, SubscribeVO.class);
 			((SubscribeVO) requestVO).setInputOutputStream(in,out);
-		}else if (command.contains("unsubscribe")) {
-			requestVO = new Gson().fromJson(requestData, UnsubscribeVO.class);
-
 		} else if (command.contains("query")) {
 			if (isSecureSocket) {
 				requestVO = new Gson().fromJson(requestData, SecureQueryVO.class);

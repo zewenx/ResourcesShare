@@ -24,6 +24,10 @@ public class ConnectionThread implements Runnable{
 		this.debug = debug;
 	}
 	
+	public RequestVO getVO(){
+		return vo;
+	}
+	
 	public void run() {
 		try{
 			socket = new Socket();

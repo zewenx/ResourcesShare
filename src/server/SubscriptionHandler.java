@@ -1,67 +1,106 @@
 package server;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.omg.CORBA.PUBLIC_MEMBER;
 
+import com.sun.corba.se.spi.activation.Server;
+
 import VO.ResourceVO;
+import VO.ServerVO;
 import VO.SubscribeVO;
 
 
 public class SubscriptionHandler {
-	static HashMap <String,SubscribeVO> subMap = new HashMap<String,SubscribeVO>();
+	private static Map<String, SubscribeVO> subMap = DataObject.getSublist();
+	private static Map<String, SubscriptionRelayThread> relaySubMap = new HashMap<String, SubscriptionRelayThread>();
+
+	
 	public static void checkResource(ResourceVO resourceTemplate)
 	{
+		System.out.println("Subhandle 1");
 		for(SubscribeVO vo : subMap.values())
 		{
-			if (!resourceTemplate.getChannel().equals("")) {
+			System.out.println("Subhandle 2");
+			if (!vo.getResourceTemplate().getChannel().equals("")) {
 				if (!vo.getResourceTemplate().getChannel().equals(resourceTemplate.getChannel())) {
 					continue;
 				}
 			}
-			if (!resourceTemplate.getOwner().equals("")) {
+			System.out.println("Subhandle 3");
+			if (!vo.getResourceTemplate().getOwner().equals("")) {
 				if (!vo.getResourceTemplate().getOwner().equals(resourceTemplate.getOwner())) {
 					continue;
 				}
 			}
-			if (resourceTemplate.getUri() != null && !resourceTemplate.getUri().equals("")) {
+			System.out.println("Subhandle 4");
+			if (!vo.getResourceTemplate().equals(null)&& !vo.getResourceTemplate().getUri().equals("")) {
+				System.out.println(resourceTemplate.getUri());
+				System.out.println(vo.getResourceTemplate().getUri());
 				if (!vo.getResourceTemplate().getUri().equals(resourceTemplate.getUri())) {
 					continue;
 				}
 			}
-			if (resourceTemplate.getTags() != null || resourceTemplate.getTags().size() > 0) {
+			System.out.println("Subhandle 5");
+			if (vo.getResourceTemplate().getTags() != null || vo.getResourceTemplate().getTags().size() > 0) {
 				Set<String> tagResource = new HashSet<String>();
 				Set<String> tagTemp = new HashSet<String>();
-				tagResource.addAll(resourceTemplate.getTags());
-				tagTemp.addAll(vo.getResourceTemplate().getTags());
+				tagResource.addAll(vo.getResourceTemplate().getTags());
+				tagTemp.addAll(resourceTemplate.getTags());
 				if (!tagTemp.containsAll(tagResource)) {
 					continue;
 				}
 			}
-		
-			if (resourceTemplate.getName() != "" &&resourceTemplate.getDescription() != "") {
-				if (!(vo.getResourceTemplate().getName().contains(resourceTemplate.getName())&& vo.getResourceTemplate().getDescription().contains(resourceTemplate.getDescription()))) {
+			System.out.println("Subhandle 6");
+			if (vo.getResourceTemplate().getName() != "" &&vo.getResourceTemplate().getDescription() != "") {
+				if (!(resourceTemplate.getName().contains(vo.getResourceTemplate().getName())&& resourceTemplate.getDescription().contains(vo.getResourceTemplate().getDescription()))) {
 					continue;
 				}
 			}else{
-				if (resourceTemplate.getName() == "" && !vo.getResourceTemplate().getDescription().contains(resourceTemplate.getDescription())) {
+				if (vo.getResourceTemplate().getName() == "" && !vo.getResourceTemplate().getDescription().contains(resourceTemplate.getDescription())) {
 					continue;
 				}
 				
-				if (resourceTemplate.getDescription() == "" && !vo.getResourceTemplate().getName().contains(resourceTemplate.getName())) {
+				if (vo.getResourceTemplate().getDescription() == "" && !resourceTemplate.getName().contains(vo.getResourceTemplate().getName())) {
 					continue;
 				}
 			}
 			
-			//send response to client!!
+			System.out.println("Subhandle 7");
+			vo.sendResource(resourceTemplate);
 			
 			
 		}
-		
+
 	}
-	public void addSubscription(SubscribeVO sub)
+	public static void addSubscription(SubscribeVO sub)
 	{
+
 		subMap.put(sub.getId(), sub);
+		if(sub.isRelay()){
+			for(ServerVO vo : DataObject.getServerList() ){
+				Thread connectionThread = new Thread(new SubscriptionRelayThread(vo, sub, EZShare.Server.debug));
+			}
+		}
+		
+			
 	}
+	
+	
+	public static void unsubscribe(String id){
+		boolean exists = subMap.containsKey(id);
+		if(exists)
+		{
+			(subMap.get(id)).setDone();
+			subMap.remove(id);
+		}
+	}
+	
+	public static boolean idExists(String id){
+		boolean exists = subMap.containsKey(id);
+		return exists;
+	}
+	
 }

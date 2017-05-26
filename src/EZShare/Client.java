@@ -41,6 +41,7 @@ import VO.PublishVO;
 import VO.QueryVO;
 import VO.SpecialResourceVO;
 import VO.SubscribeVO;
+import VO.UnsubscribeVO;
 import client.ConnectionThread;
 import client.Network;
 import client.OptionInit;
@@ -143,9 +144,7 @@ public class Client {
 
 	private void subscribeCommand(CommandLine commands){
 		SubscribeVO vo = new SubscribeVO();
-		System.out.println("here");
 		vo.setCommand("SUBSCRIBE");
-		System.out.println(commands.getOptionValue(Commands.id));
 		vo.setID(commands.getOptionValue(Commands.id));
 		
 		// sets values for data resources
@@ -174,7 +173,15 @@ public class Client {
 	}
 	
 	private void unsubscribeCommand(CommandLine commands){
+		UnsubscribeVO vo = new UnsubscribeVO();
+		vo.setCommand("UNSUBSCRIBE");
+		vo.setId(commands.getOptionValue(Commands.id));
 		
+		commandLog("unsubscribing from ");
+		List<String> responseList = network.request(vo);
+		System.out.println("blah");
+		String response = responseList.get(0);
+		System.out.println(response);
 	}
 	
 	private void publishCommand(CommandLine commands) {
