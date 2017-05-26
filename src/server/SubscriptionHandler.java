@@ -6,12 +6,18 @@ import java.util.Set;
 
 import org.omg.CORBA.PUBLIC_MEMBER;
 
+import com.sun.corba.se.spi.activation.Server;
+
 import VO.ResourceVO;
+import VO.ServerVO;
 import VO.SubscribeVO;
 
 
 public class SubscriptionHandler {
 	private static Map<String, SubscribeVO> subMap = DataObject.getSublist();
+	private static Map<String, SubscriptionRelayThread> relaySubMap = new HashMap<String, SubscriptionRelayThread>();
+
+	
 	public static void checkResource(ResourceVO resourceTemplate)
 	{
 		System.out.println("Subhandle 1");
@@ -73,6 +79,13 @@ public class SubscriptionHandler {
 	{
 
 		subMap.put(sub.getId(), sub);
+		if(sub.isRelay()){
+			for(ServerVO vo : DataObject.getServerList() ){
+				Thread connectionThread = new Thread(new SubscriptionRelayThread(vo, sub, EZShare.Server.debug));
+			}
+		}
+		
+			
 	}
 	
 	

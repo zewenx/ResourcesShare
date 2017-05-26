@@ -12,7 +12,7 @@ import server.DataObject;
 import server.SubscriptionHandler;
 
 public class SubscribeVO extends RequestVO{
-	boolean relay;
+	boolean relay = true;
 	private ResourceVO resourceTemplate;
 	private String id = "";
 	private DataInputStream in;
@@ -70,10 +70,14 @@ public class SubscribeVO extends RequestVO{
 		
 		//Process
 		SubscriptionHandler.addSubscription(this);
+		
 		SuccessVO successVO = new SuccessVO();
 		try{
 			out.writeUTF(successVO.toJson());
-	
+			//relay to other servers
+			if(relay == true){
+				
+			}
 			//need to keep thread open here and wait for responses
 			while(!done){
 				try {
