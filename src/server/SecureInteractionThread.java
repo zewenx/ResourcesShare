@@ -34,8 +34,7 @@ public class SecureInteractionThread implements Runnable {
 
 		vo.setServerList(serverList);
 
-		Socket socket = null;
-
+		SSLSocket sslsocket = null;
 		while (true) {
 			if (serverList.size() == 0) {
 				try {
@@ -60,10 +59,10 @@ public class SecureInteractionThread implements Runnable {
 				// InetSocketAddress("sunrise.cis.unimelb.edu.au", 3780);
 
 				SSLSocketFactory sslsocketfactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
-				SSLSocket sslsocket = (SSLSocket) sslsocketfactory.createSocket(host,port);
+				sslsocket = (SSLSocket) sslsocketfactory.createSocket(host,port);
 
-				DataInputStream in = new DataInputStream(socket.getInputStream());
-				DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+				DataInputStream in = new DataInputStream(sslsocket.getInputStream());
+				DataOutputStream out = new DataOutputStream(sslsocket.getOutputStream());
 				LogUtils.initLogger(Server.logtag).log(" SEND: " +vo.toJson(), debug);
 				out.writeUTF(vo.toJson());
 				out.flush();
@@ -86,7 +85,7 @@ public class SecureInteractionThread implements Runnable {
 				LogUtils.initLogger(Server.logtag).log("exchanging to " + host + ":" + port + " failed!", debug);
 			} finally {
 				try {
-					socket.close();
+					sslsocket.close();
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
