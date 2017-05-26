@@ -45,6 +45,7 @@ import VO.UnsubscribeVO;
 import client.ConnectionThread;
 import client.Network;
 import client.OptionInit;
+import client.SecureConnectionThread;
 import client.SecureNetwork;
 import javafx.scene.effect.FloatMap;
 import server.Commands;
@@ -363,8 +364,12 @@ public class Client {
 		// InetSocketAddress address = new
 		// InetSocketAddress("sunrise.cis.unimelb.edu.au", 3780);
 		InetSocketAddress address = null;
+		if (isSecureConnection) {
+			connectionThread = new Thread(new SecureConnectionThread(parameters.get(Commands.host), Integer.parseInt(parameters.get(Commands.port)),vo, debug));
+		}else{
 			connectionThread = new Thread(new ConnectionThread(parameters.get(Commands.host), Integer.parseInt(parameters.get(Commands.port)),vo, debug));//parameters.get(Commands.host), Integer.parseInt(parameters.get(Commands.port)
-		connectionThread.start();
+		}
+			connectionThread.start();
 	}
 	
 }

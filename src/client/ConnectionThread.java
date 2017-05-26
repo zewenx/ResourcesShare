@@ -18,6 +18,9 @@ public class ConnectionThread implements Runnable{
 	private boolean debug;
 	
 	
+	public ConnectionThread() {
+	}
+
 	public ConnectionThread(String host, int port, RequestVO vo,boolean debug){
 		this.address = new InetSocketAddress(host,port);
 		this.vo = vo;

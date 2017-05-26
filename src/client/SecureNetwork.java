@@ -84,7 +84,14 @@ public class SecureNetwork extends Network {
 							break l;
 						}
 						break;
+					case "unsubscribe":
+						if(response.contains("response")){
+							break l;
+						}
+					
+
 					}
+				
 
 			}
 			for (Object str : responseList) {

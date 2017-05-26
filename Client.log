@@ -94,3 +94,39 @@
   <message> RECEIVED: {"resultSize":"0"}</message>
 </record>
 </log>
+<?xml version="1.0" encoding="windows-1252" standalone="no"?>
+<!DOCTYPE log SYSTEM "logger.dtd">
+<log>
+<record>
+  <date>2017-05-26T19:53:41</date>
+  <millis>1495792421244</millis>
+  <sequence>0</sequence>
+  <logger>Client.log</logger>
+  <level>INFO</level>
+  <class>server.LogUtils</class>
+  <method>log</method>
+  <thread>1</thread>
+  <message>setting debug on</message>
+</record>
+<record>
+  <date>2017-05-26T19:53:41</date>
+  <millis>1495792421275</millis>
+  <sequence>1</sequence>
+  <logger>Client.log</logger>
+  <level>INFO</level>
+  <class>server.LogUtils</class>
+  <method>log</method>
+  <thread>1</thread>
+  <message>subscribing to 127.0.0.1:3780</message>
+</record>
+<record>
+  <date>2017-05-26T19:53:41</date>
+  <millis>1495792421572</millis>
+  <sequence>2</sequence>
+  <logger>Client.log</logger>
+  <level>INFO</level>
+  <class>server.LogUtils</class>
+  <method>log</method>
+  <thread>12</thread>
+  <message> SEND: {"relay":true,"resourceTemplate":{"name":"","tags":[],"description":"","uri":"","channel":"","owner":""},"id":"cal","resourceCount":0,"done":false,"command":"SUBSCRIBE"}</message>
+</record>

@@ -32,19 +32,17 @@ public class CommandExecutor {
 	private DataObject data;
 	private DataInputStream in;
 	private DataOutputStream out;
-	
-	
+
 	private CommandExecutor() {
 		data = new DataObject();
 		data.setSecret(Server.parameters.get(Commands.secret));
 	}
-	
-	public void setInputOutputStream(DataInputStream in,DataOutputStream out){
+
+	public void setInputOutputStream(DataInputStream in, DataOutputStream out) {
 		this.in = in;
 		this.out = out;
 	}
 
-	
 	static CommandExecutor init() {
 		if (mCommandExecutor == null) {
 			mCommandExecutor = new CommandExecutor();
@@ -55,7 +53,6 @@ public class CommandExecutor {
 	public DataObject getDataObject() {
 		return data;
 	}
-
 
 	synchronized List<String> submit(String requestData, boolean isSecureSocket) {
 		data.setSecureConnection(isSecureSocket);
@@ -71,12 +68,9 @@ public class CommandExecutor {
 			requestVO = new Gson().fromJson(requestData, RemoveVO.class);
 		} else if (command.contains("share")) {
 			requestVO = new Gson().fromJson(requestData, ShareVO.class);
-		}else if (command.contains("unsubscribe")) {
+		} else if (command.contains("unsubscribe")) {
 			requestVO = new Gson().fromJson(requestData, UnsubscribeVO.class);
-		}else if (command.contains("subscribe")) {
-			requestVO = new Gson().fromJson(requestData, SubscribeVO.class);
-			((SubscribeVO) requestVO).setInputOutputStream(in,out);
-		} else if (command.contains("query")) {
+		}else if (command.contains("query")) {
 			if (isSecureSocket) {
 				requestVO = new Gson().fromJson(requestData, SecureQueryVO.class);
 			} else {
@@ -92,6 +86,19 @@ public class CommandExecutor {
 			}
 		}
 
+		List<String> responseList = requestVO.execute(data);
+		return responseList;
+	}
+
+	public List submitSubcribe(String data2, boolean b) {
+		// TODO Auto-generated method stub
+		RequestVO requestVO = null;
+		data.setSecureConnection(b);
+		JsonParser parser = new JsonParser();
+		JsonObject jsonObject = parser.parse(data2).getAsJsonObject();
+
+		requestVO = new Gson().fromJson(data2, SubscribeVO.class);
+		((SubscribeVO) requestVO).setInputOutputStream(in, out);
 		List<String> responseList = requestVO.execute(data);
 		return responseList;
 	}

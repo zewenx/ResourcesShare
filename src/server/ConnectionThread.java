@@ -25,7 +25,6 @@ public class ConnectionThread implements Runnable {
 	private DataInputStream in;
 	private DataOutputStream out;
 
-
 	public ConnectionThread(Socket socket) {
 		this.mSocket = socket;
 		try {
@@ -36,41 +35,35 @@ public class ConnectionThread implements Runnable {
 			e.printStackTrace();
 		}
 	}
+
 	@SuppressWarnings("rawtypes")
 	@Override
 	public void run() {
 		try {
 			String data = in.readUTF();
-			
 
-			
-
-			LogUtils.initLogger(Server.logtag).log(" RECEIVED: "+data, Server.debug);
+			LogUtils.initLogger(Server.logtag).log(" RECEIVED: " + data, Server.debug);
 			CommandExecutor commandExecutor = CommandExecutor.init();
 			commandExecutor.setInputOutputStream(in, out);
 
-	/*		List responseData = null;
-			if(data.toLowerCase().contains("unsubscribe")){
-				synchronized (this) {
-					responseData = commandExecutor.submit(data, false);
-				}
+			List responseData = null;
+			/*
+			 * if(data.toLowerCase().contains("unsubscribe")){ synchronized
+			 * (this) { responseData = commandExecutor.submit(data, false); } }
+			 * else if(data.toLowerCase().contains("subscribe")){ responseData =
+			 * commandExecutor.submit(data, false); } else{ synchronized (this)
+			 * { responseData = commandExecutor.submit(data, false); } //TODO
+			 * SECURITY STUFF }
+			 */
+			if (data.toLowerCase().contains("subscribe")&&!data.toLowerCase().contains("unsubscribe")) {
+				responseData = commandExecutor.submitSubcribe(data, mSocket instanceof SSLSocket);
+			} else {
+				responseData = commandExecutor.submit(data, mSocket instanceof SSLSocket); // TODO
 			}
-			else if(data.toLowerCase().contains("subscribe")){
-			responseData = commandExecutor.submit(data, false); 
-			}
-			else{
-				synchronized (this) {
-					responseData = commandExecutor.submit(data, false); 
-				}
-			//TODO SECURITY STUFF
-			}*/
-
-			List responseData = commandExecutor.submit(data, mSocket instanceof SSLSocket); //TODO SECURITY STUFF
-			
 			for (Object o : responseData) {
 				if (o instanceof String) {
 					out.writeUTF((String) o);
-					LogUtils.initLogger(Server.logtag).log(" SEND: "+(String) o, Server.debug);
+					LogUtils.initLogger(Server.logtag).log(" SEND: " + (String) o, Server.debug);
 				} else {
 					out.write((byte[]) o);
 				}

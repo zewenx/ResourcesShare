@@ -69,7 +69,7 @@ public class SubscribeVO extends RequestVO{
 		}
 		
 		//Process
-		SubscriptionHandler.addSubscription(this);
+		SubscriptionHandler.addSubscription(this,data);
 		
 		SuccessVO successVO = new SuccessVO();
 		try{
