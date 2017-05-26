@@ -6,20 +6,35 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.gson.GsonBuilder;
+import com.google.gson.annotations.Expose;
 import com.sun.xml.internal.ws.api.config.management.policy.ManagedServiceAssertion.NestedParameters;
 
 import server.DataObject;
 import server.SubscriptionHandler;
 
 public class SubscribeVO extends RequestVO{
+	@Expose
 	boolean relay = true;
+	@Expose
 	private ResourceVO resourceTemplate;
+	@Expose
 	private String id = "";
+	
+	@Expose(serialize = false)
 	private DataInputStream in;
+	
+	@Expose(serialize = false)
 	private DataOutputStream out;
+	@Expose(serialize = false)
 	private int resourceCount = 0;
+	@Expose(serialize = false)
 	private List<String> buffer = null;
+	@Expose(serialize = false)
 	private boolean done = false;
+	
+
+
 	
 	public boolean isRelay() {
 		return relay;
@@ -110,5 +125,9 @@ public class SubscribeVO extends RequestVO{
 	synchronized public void setDone(){
 		done = true;
 		notifyAll();
+	}
+	@Override
+	public String toJson(){
+		return  new GsonBuilder().excludeFieldsWithoutExposeAnnotation().setPrettyPrinting().create().toJson(this);
 	}
 }

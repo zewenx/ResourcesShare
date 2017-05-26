@@ -9,6 +9,7 @@ import org.omg.CORBA.PUBLIC_MEMBER;
 
 import com.sun.corba.se.spi.activation.Server;
 
+import VO.RequestVO;
 import VO.ResourceVO;
 import VO.ServerVO;
 import VO.SubscribeVO;
@@ -76,7 +77,7 @@ public class SubscriptionHandler {
 		if (sub.isRelay()) {
 			if (data.isSecureConnection) {
 				for (ServerVO vo : data.getSecureServerList()) {
-					connectionThread = new Thread(new SecureConnectionThread(vo.getHostname(),vo.getPort(), sub, EZShare.Server.debug));
+//					connectionThread = new Thread(new ConnectionThread(vo.getHostname(),vo.getPort(), sub, EZShare.Server.debug));
 					connectionThread.start();
 				}
 			} else {

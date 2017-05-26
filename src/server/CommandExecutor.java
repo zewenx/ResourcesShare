@@ -92,13 +92,13 @@ public class CommandExecutor {
 
 	public List submitSubcribe(String data2, boolean b) {
 		// TODO Auto-generated method stub
-		RequestVO requestVO = null;
+		SubscribeVO requestVO = null;
 		data.setSecureConnection(b);
 		JsonParser parser = new JsonParser();
 		JsonObject jsonObject = parser.parse(data2).getAsJsonObject();
 
 		requestVO = new Gson().fromJson(data2, SubscribeVO.class);
-		((SubscribeVO) requestVO).setInputOutputStream(in, out);
+		 requestVO.setInputOutputStream(in, out);
 		List<String> responseList = requestVO.execute(data);
 		return responseList;
 	}
