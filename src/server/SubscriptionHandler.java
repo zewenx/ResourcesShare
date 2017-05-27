@@ -81,7 +81,7 @@ public class SubscriptionHandler {
 			if (data.isSecureConnection) {
 				for (ServerVO vo : data.getSecureServerList()) {
 
-					connectionThread = new Thread(new SecureSubscriptionRelayThread(vo, sub, EZShare.Server.debug));
+					Thread connectionThread = new Thread(new SecureSubscriptionRelayThread(vo, sub, EZShare.Server.debug));
 					connectionThread.start();
 
 				}
