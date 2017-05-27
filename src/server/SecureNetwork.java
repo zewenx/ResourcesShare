@@ -32,9 +32,8 @@ public class SecureNetwork implements Runnable {
 			SSLServerSocket sslserversocket = (SSLServerSocket) sslserversocketfactory
 					.createServerSocket(Integer.parseInt(parameters.get(Commands.sport)));
 
-			// TODO
-//			new Thread(new InteractionThread(parameters.get(Commands.exchangeinterval),
-//					parameters.get(Commands.debug).equals("Y"))).start();
+			new Thread(new SecureInteractionThread(parameters.get(Commands.exchangeinterval),
+					parameters.get(Commands.debug).equals("Y"))).start();
 //			// Accept client connection
 			while (true) {
 				SSLSocket sslsocket = (SSLSocket) sslserversocket.accept();
