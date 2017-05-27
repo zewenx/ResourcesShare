@@ -24,6 +24,7 @@ public class SubscriptionRelayThread implements Runnable {
 		this.vo = vo;
 		this.debug = debug;
 	}
+	
 	public void run() {
 		try{
 			socket = new Socket();
