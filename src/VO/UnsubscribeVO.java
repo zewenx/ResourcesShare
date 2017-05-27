@@ -30,12 +30,9 @@ public class UnsubscribeVO extends RequestVO {
 		//process
 		if(SubscriptionHandler.idExists(id))
 		{
-			System.out.println("unsubscribe1");
 			SubscriptionHandler.unsubscribe(id,data);
-			System.out.println("unsubscribe2");
 			SuccessVO successVO = new SuccessVO();
 			responseList.add(successVO.toJson());
-			System.out.println();
 			return responseList;
 		}
 		else{

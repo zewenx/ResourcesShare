@@ -117,7 +117,6 @@ public class SubscribeVO extends RequestVO{
 	}
 	
 	synchronized public void sendResource(ResourceVO vo){
-		System.out.println();
 		resourceCount++;
 		buffer.add(vo.toJson());
 		notifyAll();

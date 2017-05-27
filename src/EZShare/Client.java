@@ -180,7 +180,6 @@ public class Client {
 		
 		commandLog("unsubscribing from ");
 		List<String> responseList = network.request(vo);
-		System.out.println("blah");
 		String response = responseList.get(0);
 		System.out.println(response);
 	}

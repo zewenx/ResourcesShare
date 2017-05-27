@@ -36,8 +36,6 @@ public class SubscriptionHandler {
 				}
 			}
 			if (!vo.getResourceTemplate().equals(null) && !vo.getResourceTemplate().getUri().equals("")) {
-				System.out.println(resourceTemplate.getUri());
-				System.out.println(vo.getResourceTemplate().getUri());
 				if (!vo.getResourceTemplate().getUri().equals(resourceTemplate.getUri())) {
 					continue;
 				}
