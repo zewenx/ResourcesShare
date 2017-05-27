@@ -1,7 +1,9 @@
 package server;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -13,12 +15,13 @@ import VO.RequestVO;
 import VO.ResourceVO;
 import VO.ServerVO;
 import VO.SubscribeVO;
+import VO.UnsubscribeVO;
 import client.SecureConnectionThread;
 import client.ConnectionThread;
 
 public class SubscriptionHandler {
 	private static Map<String, SubscribeVO> subMap = DataObject.getSublist();
-	private static Map<String, Thread> relaySubMap = new HashMap<String, Thread>();
+	private static Map<String, List<Thread>> relaySubMap = new HashMap<String, List<Thread>>();
 
 	public static void checkResource(ResourceVO resourceTemplate) {
 		for (SubscribeVO vo : subMap.values()) {
@@ -73,27 +76,43 @@ public class SubscriptionHandler {
 	public static void addSubscription(SubscribeVO sub, DataObject data) {
 
 		subMap.put(sub.getId(), sub);
-		Thread connectionThread = null;
+		List<Thread> connectionThreads = new ArrayList<Thread>();
 		if (sub.isRelay()) {
 			if (data.isSecureConnection) {
 				for (ServerVO vo : data.getSecureServerList()) {
+
 					connectionThread = new Thread(new SecureSubscriptionRelayThread(vo, sub, EZShare.Server.debug));
 					connectionThread.start();
+
 				}
 			} else {
 				for (ServerVO vo : data.getServerList()) {
-					connectionThread = new Thread(new SubscriptionRelayThread(vo, sub, EZShare.Server.debug));
+					Thread connectionThread = new Thread(new SubscriptionRelayThread(vo, sub, EZShare.Server.debug));
 					connectionThread.start();
+					connectionThreads.add(connectionThread);
 				}
 			}
-			relaySubMap.put(sub.getId(), connectionThread);
+			relaySubMap.put(sub.getId(), connectionThreads);
 		}
 
 	}
 
-	public static void unsubscribe(String id) {
+	public static void unsubscribe(String id,DataObject data) {
 		boolean exists = subMap.containsKey(id);
 		if (exists) {
+			if(relaySubMap.containsKey(id)){
+				//setup unsubscribe variable object
+				UnsubscribeVO vo = new UnsubscribeVO();
+				vo.setCommand("UNSUBSCRIBE");
+				vo.setId(id);
+				
+				for(ServerVO server : data.serverList){
+					new Thread(new client.ConnectionThread(server.getHostname(), server.getPort(), vo, EZShare.Server.debug));
+				}
+				for(ServerVO server : data.getSecureServerList()){
+					new Thread(new client.SecureConnectionThread(server.getHostname(), server.getPort(), vo, EZShare.Server.debug));
+				}
+			}
 			(subMap.get(id)).setDone();
 			subMap.remove(id);
 		}

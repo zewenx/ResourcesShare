@@ -50,9 +50,15 @@ public class SecureConnectionThread  extends ConnectionThread{
 					e.printStackTrace();
 					break l;
 				}
-				if (response.length() > 0) {
+				if (response.length() > 0 && vo.getCommand().toLowerCase().equals("subscribe")) {
 					System.out.println(response);
-					if (response.contains("resultSize") || response.contains("error")) {
+					if(response.contains("resultSize")||response.contains("error")) {
+						break l;
+					}					
+				}
+				if (response.length() > 0 && vo.getCommand().toLowerCase().equals("unsubscribe")){
+					System.out.println(response);
+					if(response.contains("response")){
 						break l;
 					}
 				}
