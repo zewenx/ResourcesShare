@@ -33,7 +33,6 @@ public class UnsubscribeVO extends RequestVO {
 			SubscriptionHandler.unsubscribe(id,data);
 			SuccessVO successVO = new SuccessVO();
 			responseList.add(successVO.toJson());
-			System.out.println();
 			return responseList;
 		}
 		else{

@@ -36,8 +36,6 @@ public class SubscriptionHandler {
 				}
 			}
 			if (!vo.getResourceTemplate().equals(null) && !vo.getResourceTemplate().getUri().equals("")) {
-				System.out.println(resourceTemplate.getUri());
-				System.out.println(vo.getResourceTemplate().getUri());
 				if (!vo.getResourceTemplate().getUri().equals(resourceTemplate.getUri())) {
 					continue;
 				}
@@ -80,9 +78,10 @@ public class SubscriptionHandler {
 		if (sub.isRelay()) {
 			if (data.isSecureConnection) {
 				for (ServerVO vo : data.getSecureServerList()) {
-//					Thread connectionThread = new Thread(new ConnectionThread(vo.getHostname(),vo.getPort(), sub, EZShare.Server.debug));
-					
-//					connectionThread.start();
+
+					Thread connectionThread = new Thread(new SecureSubscriptionRelayThread(vo, sub, EZShare.Server.debug));
+					connectionThread.start();
+
 				}
 			} else {
 				for (ServerVO vo : data.getServerList()) {

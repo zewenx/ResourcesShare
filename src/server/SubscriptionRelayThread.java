@@ -32,7 +32,7 @@ public class SubscriptionRelayThread implements Runnable {
 			DataInputStream in = new DataInputStream(socket.getInputStream());
 			DataOutputStream out = new DataOutputStream(socket.getOutputStream());
 			((SubscribeVO)vo).setRelay(false);
-//			LogUtils.initLogger(EZShare.Server.logtag).log(" SEND: " + vo.toJson(), debug);
+			LogUtils.initLogger(EZShare.Server.logtag).log(" SEND: " + vo.toJson(), debug);
 			out.writeUTF(vo.toJson());
 			out.flush();
 			l:while(true){
